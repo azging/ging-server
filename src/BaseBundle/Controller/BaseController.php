@@ -22,7 +22,7 @@ class BaseController extends Controller {
     private $request;
 
     function __construct($filePath = __FILE__) {
-        $this->data = array();
+        $this->data = new \StdClass();
         $this->errorFilePath = $filePath;
         $this->userId = 0;
         $this->request = Request::createFromGlobals();
