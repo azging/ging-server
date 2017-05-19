@@ -117,10 +117,10 @@ class UserController extends ApiBaseController {
 
             $this->status = BaseConst::STATUS_SUCCESS;
             $this->data = array(
-                'AuthCode' => 'xxxxxx',
-                'ExpireTime' => PhoneConst::AUTH_CODE_EXPIRE_SECONDS,
-                'SMSResult' => $result,
-            );
+                    'AuthCode' => 'xxxxxx',
+                    'ExpireTime' => PhoneConst::AUTH_CODE_EXPIRE_SECONDS,
+                    'SMSResult' => $result,
+                    );
             $this->msg = '验证码发送成功';
         } catch (\Exception $e) {
             if (-2 != $e->getCode()) {
@@ -178,7 +178,7 @@ class UserController extends ApiBaseController {
                 $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, "请输入正确的手机号码");
             }
             $pacObj = $phoneService->getPACByTelAndCode($telephone, $authCode);
-            
+
             if (UtilService::isValidObj($pacObj)) {
                 $expireTime = $pacObj->getExpireTime();
                 if (TimeUtilService::isBiggerTime(new \DateTime(), $expireTime)) {
@@ -195,8 +195,120 @@ class UserController extends ApiBaseController {
 
             $this->status = BaseConst::STATUS_SUCCESS;
             $this->data = $wrapperService->getUserWrapper($user);
-            $this->msg = '登录成功';
+            $this->msg = '手机号登录成功';
         } catch (\Exception $e) {
+            $this->printExceptionToLog($e);
+        }
+
+        return $this->getJsonResponse();
+    }
+
+    /**
+     * @ApiDoc(
+     *  resource = true,
+     *  section = "User",
+     *  description = "使用微信注册或登录",
+     *  tags = {
+     *      "stable" = "#23fd09",
+     *      "cyy" = "#607d8b"
+     *  },
+     *  parameters = {
+     *      {
+     *          "name" = "WechatId",
+     *          "dataType" = "string",
+     *          "required" = true,
+     *          "format" = "",
+     *          "description" = "微信用户唯一id",
+     *      },
+     *      {
+     *          "name" = "Nick",
+     *          "dataType" = "string",
+     *          "required" = true,
+     *          "format" = "昵称",
+     *          "description" = "昵称"
+     *      },
+     *      {
+     *          "name" = "AvatarUrl",
+     *          "dataType" = "string",
+     *          "required" = true,
+     *          "format" = "http://download.duckr.cn/DuckrDefaultPhoto.png",
+     *          "description" = "头像url"
+     *      },
+     *      {
+     *          "name" = "Gender",
+     *          "dataType" = "integer",
+     *          "required" = true,
+     *          "format" = "0为未知，1为男，2为女",
+     *          "description" = "性别"
+     *      },
+     *  },
+     *  output = {
+     *      "class" = "UserBundle\Entity\Wrapper\UserWrapper",
+     *  },
+     *  views = {"version1", "default"},
+     * )
+     *
+     * @Route("/api/v1/user/login/wechat/", methods="POST")
+     */
+    public function loginByWechatAction() {
+        $wechatId = $this->getPost('WechatId');
+        $nick = $this->getPost('Nick');
+        $avatarUrl = $this->getPost('AvatarUrl');
+        $gender = $this->getPost('Gender');
+
+        $userService = $this->get('user.userservice');
+        $wrapperService = $this->get('user.wrapperservice');
+
+        try {
+            StringUtilService::checkIsValidString($wechatId, "微信ID错误");
+            StringUtilService::checkIsValidString($nick, "昵称为空");
+            StringUtilService::checkIsValidString($avatarUrl, "头像为空");
+
+            $user = $userService->getUserByWechatId($wechatId, true);
+            if (!UtilService::isValidObj($user)) {
+                $user = $userService->registerByWechat($wechatId, $nick, $avatarUrl, $gender);
+            }
+
+            $this->status = BaseConst::STATUS_SUCCESS;
+            $this->data = $wrapperService->getUserWrapper($user);
+            $this->msg = '微信登录成功';
+        } catch (\Exception $e) {
+            $this->printExceptionToLog($e);
+        }
+
+        return $this->getJsonResponse();
+    }
+
+    /**
+     * @ApiDoc(
+     *  resource = true,
+     *  section = "User",
+     *  description = "用户退出登录接口",
+     *  tags = {
+     *      "stable" = "#23fd09",
+     *      "zzs" = "#ff9000"
+     *  },
+     *  parameters = {
+     *  },
+     *  output = {
+     *      "class" = "UserBundle\Entity\Wrapper\UserWrapper",
+     *  },
+     *  views = {"version6", "default"},
+     * )
+     *
+     * @Route("/api/v1/user/logout/", methods="POST")
+     */
+    public function logoutAction() {
+        $wrapperService = $this->get('user.wrapperservice');
+
+        try {
+            $this->checkIfLogin(true);
+
+            $this->status = BaseConst::STATUS_SUCCESS;
+            $this->data = $wrapperService->getUserWrapper($this->user);
+            $this->msg = "退出登录成功";
+        } catch (\Exception $e) {
+
             $this->printExceptionToLog($e);
         }
 

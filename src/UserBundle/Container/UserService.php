@@ -148,10 +148,11 @@ class UserService extends BaseService {
      *
      * 通过微信注册用户
      */
-    public function registerByWechat($wechatId, $nick, $gender) {
+    public function registerByWechat($wechatId, $nick, $avatarUrl, $gender) {
         $infoArr = array(
             'WechatId' => $wechatId,
             'Nick' => $nick,
+            'AvatarUrl' => $avatarUrl,
             'Gender' => $gender,
             'LoginType' => UserConst::USER_LOGIN_TYPE_WECHAT,
         );
