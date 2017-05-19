@@ -286,14 +286,14 @@ class UserController extends ApiBaseController {
      *  description = "用户退出登录接口",
      *  tags = {
      *      "stable" = "#23fd09",
-     *      "zzs" = "#ff9000"
+     *      "cyy" = "#607d8b"
      *  },
      *  parameters = {
      *  },
      *  output = {
      *      "class" = "UserBundle\Entity\Wrapper\UserWrapper",
      *  },
-     *  views = {"version6", "default"},
+     *  views = {"version1", "default"},
      * )
      *
      * @Route("/api/v1/user/logout/", methods="POST")
