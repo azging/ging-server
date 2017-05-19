@@ -1,0 +1,35 @@
+QuestionBundle\Entity\QuestionAnswer:
+    type: entity
+    table: null
+    repositoryClass: QuestionBundle\Repository\QuestionAnswerRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        auid:
+            type: string
+            length: '50'
+            unique: true
+        userId:
+            type: integer
+        questionId:
+            type: integer
+        content:
+            type: string
+            length: '600'
+        type:
+            type: smallint
+        status:
+            type: smallint
+        payStatus:
+            type: smallint
+        isValid:
+            type: smallint
+        createTime:
+            type: datetime
+        updateTime:
+            type: datetime
+    lifecycleCallbacks: {  }

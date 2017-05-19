@@ -1,0 +1,27 @@
+AppBundle\Entity\Feedback:
+    type: entity
+    table: null
+    repositoryClass: AppBundle\Repository\FeedbackRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        fuid:
+            type: string
+            length: '50'
+            unique: true
+        userId:
+            type: integer
+        content:
+            type: string
+            length: '1000'
+        isValid:
+            type: smallint
+        createTime:
+            type: datetime
+        updateTime:
+            type: datetime
+    lifecycleCallbacks: {  }

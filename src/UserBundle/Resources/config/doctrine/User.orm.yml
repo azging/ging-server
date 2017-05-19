@@ -1,0 +1,69 @@
+UserBundle\Entity\User:
+    type: entity
+    table: null
+    repositoryClass: UserBundle\Repository\UserRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        uuid:
+            type: string
+            length: '50'
+            unique: true
+        cid:
+            type: string
+            length: '50'
+            unique: true
+        telephone:
+            type: string
+            length: '20'
+            unique: true
+        wechatId:
+            type: string
+            length: '50'
+            unique: true
+        nick:
+            type: string
+            length: '100'
+        avatarUrl:
+            type: string
+            length: '300'
+        gender:
+            type: smallint
+        liveCityId:
+            type: integer
+        liveCityName:
+            type: string
+            length: '100'
+        baseWeight:
+            type: integer
+        tempWeight:
+            type: integer
+        weight:
+            type: integer
+        type:
+            type: smallint
+        deviceUuid:
+            type: string
+            length: '130'
+        osType:
+            type: smallint
+        appVersion:
+            type: string
+            length: '10'
+        lng:
+            type: float
+        lat:
+            type: float
+        loginType:
+            type: smallint
+        isValid:
+            type: smallint
+        createTime:
+            type: datetime
+        updateTime:
+            type: datetime
+    lifecycleCallbacks: {  }

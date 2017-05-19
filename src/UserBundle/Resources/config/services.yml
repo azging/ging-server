@@ -1,0 +1,13 @@
+services:
+    user.userservice:
+        class: UserBundle\Container\UserService
+        arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
+    user.wrapperservice:
+        class: UserBundle\Container\WrapperService
+        arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
+    user.phoneservice:
+        class: UserBundle\Container\PhoneService
+        arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
+#    user.example:
+#        class: UserBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]

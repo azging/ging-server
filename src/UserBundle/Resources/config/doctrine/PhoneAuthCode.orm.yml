@@ -1,0 +1,26 @@
+UserBundle\Entity\PhoneAuthCode:
+    type: entity
+    table: null
+    repositoryClass: UserBundle\Repository\PhoneAuthCodeRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        telephone:
+            type: string
+            length: '20'
+        authCode:
+            type: string
+            length: '10'
+        expireTime:
+            type: datetime
+        isValid:
+            type: smallint
+        createTime:
+            type: datetime
+        updateTime:
+            type: datetime
+    lifecycleCallbacks: {  }

@@ -1,0 +1,45 @@
+QuestionBundle\Entity\Question:
+    type: entity
+    table: null
+    repositoryClass: QuestionBundle\Repository\QuestionRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        quid:
+            type: string
+            length: '50'
+            unique: true
+        userId:
+            type: integer
+        title:
+            type: string
+            length: '100'
+        description:
+            type: string
+            length: 255
+        isAnonymous:
+            type: smallint
+        photoUrls:
+            type: string
+            length: '600'
+        redPacket:
+            type: float
+        lng:
+            type: float
+        lat:
+            type: float
+        status:
+            type: smallint
+        payStatus:
+            type: smallint
+        isValid:
+            type: smallint
+        createTime:
+            type: datetime
+        updateTime:
+            type: datetime
+    lifecycleCallbacks: {  }

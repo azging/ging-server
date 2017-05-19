@@ -32,3 +32,12 @@ monolog:
 
 #swiftmailer:
 #    delivery_addresses: ['me@example.com']
+
+#NelmioApiDocBundle Configuration
+nelmio_api_doc:
+    sandbox:
+        body_format:
+            formats:
+                - json
+                - form
+            default_format: json
