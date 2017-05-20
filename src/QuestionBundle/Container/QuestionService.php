@@ -12,6 +12,7 @@ use UtilBundle\Container\TimeUtilService;
 use UtilBundle\Container\UtilService;
 
 use BaseBundle\Container\BaseConst;
+use QuestionBundle\Container\QuestionConst;
 
 class QuestionService extends BaseService {
     private $questionRepo;
@@ -94,6 +95,36 @@ class QuestionService extends BaseService {
         if (UtilService::isValidArr($questions)) {
             $question = end($questions);
             $orderStr = TimeUtilService::timeToStr($question->getCreateTime());
+        }
+        return $questions;
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-20
+     *
+     * 热门问题列表
+     */
+    public function getHotQuestionList(&$orderStr) {
+        if (empty($orderStr)) {
+            $orderStr = QuestionConst::QUESTION_MAX_WEIGHT;
+        }
+
+        $qb = $this->em->createQueryBuilder();
+        $q = $qb->select('q')
+            ->from('QuestionBundle:Question', 'q')
+            ->where('q.weight < :Weight')
+            ->andWhere('q.isValid = 1')
+            ->setParameter('Weight', $orderStr)
+            ->addOrderBy('q.weight', 'DESC')
+            ->setMaxResults(BaseConst::LIST_DEFAULT_NUM)
+            ->getQuery();
+        $questions = $q->getResult();
+
+        if (UtilService::isValidArr($questions)) {
+            $question = end($questions);
+            $orderStr = $question->getWeight();
         }
         return $questions;
     }
