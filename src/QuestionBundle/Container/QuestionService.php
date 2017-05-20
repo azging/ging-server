@@ -13,6 +13,7 @@ use UtilBundle\Container\UtilService;
 
 use BaseBundle\Container\BaseConst;
 use QuestionBundle\Container\QuestionConst;
+use UtilBundle\Container\UtilConst;
 
 class QuestionService extends BaseService {
     private $questionRepo;
@@ -90,13 +91,13 @@ class QuestionService extends BaseService {
             ->addOrderBy('q.createTime', 'DESC')
             ->setMaxResults(BaseConst::LIST_DEFAULT_NUM)
             ->getQuery();
-        $questions = $q->getResult();
+        $questionArr = $q->getResult();
 
-        if (UtilService::isValidArr($questions)) {
-            $question = end($questions);
+        if (UtilService::isValidArr($questionArr)) {
+            $question = end($questionArr);
             $orderStr = TimeUtilService::timeToStr($question->getCreateTime());
         }
-        return $questions;
+        return $questionArr;
     }
 
     /**
@@ -120,12 +121,63 @@ class QuestionService extends BaseService {
             ->addOrderBy('q.weight', 'DESC')
             ->setMaxResults(BaseConst::LIST_DEFAULT_NUM)
             ->getQuery();
-        $questions = $q->getResult();
+        $questionArr = $q->getResult();
 
-        if (UtilService::isValidArr($questions)) {
-            $question = end($questions);
+        if (UtilService::isValidArr($questionArr)) {
+            $question = end($questionArr);
             $orderStr = $question->getWeight();
         }
-        return $questions;
+        return $questionArr;
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-20
+     *
+     * 附近问题列表
+     */
+    public function getNearbyQuestionList(&$orderStr) {
+        if (empty($orderStr)) {
+            $orderStr = 0;
+        }
+
+        $lng = $this->getLocLng();
+        $lat = $this->getLocLat();
+        if (!UtilService::checkIsLoc($lng, $lat)) {
+            $lng = UtilConst::LOC_LNG_DEFAULT;
+            $lat = UtilConst::LOC_LAT_DEFAULT;
+        }
+
+        $getDistanceSql = '(ROUND('
+            . ' 6378.138 * 2 * ASIN(SQRT('
+            . ' POWER(SIN((q.lat * PI() / 180 - :Lat * PI() / 180) / 2), 2) +'
+            . ' COS(q.lat * PI() / 180) *'
+            . ' COS(:Lat * PI() / 180) *'
+            . ' POWER(SIN((q.lng * PI() / 180 - :Lng * PI() / 180) / 2), 2)'
+            . ')) * 1000)) as distance';
+
+        $qb = $this->em->createQueryBuilder();
+        $q = $qb->select('q as Question')
+            ->addSelect($getDistanceSql)
+            ->from('QuestionBundle:Question', 'q')
+            ->where('q.isValid = 1')
+            ->setParameter('Lat', $lat)
+            ->setParameter('Lng', $lng)
+            ->having('distance > :Distance')
+            ->setParameter('Distance', $orderStr)
+            ->orderBy('distance', 'ASC')
+            ->setMaxResults(BaseConst::LIST_DEFAULT_NUM)
+            ->getQuery();
+        $resultArr = $q->getResult();
+
+        $questionArr = array();
+        if (UtilService::isValidArr($resultArr)) {
+            foreach ($resultArr as $result) {
+                $questionArr[] = $result['Question'];
+            }
+            $orderStr = end($resultArr)['distance'];
+        }
+        return $questionArr;
     }
 }

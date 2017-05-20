@@ -240,7 +240,51 @@ class QuestionController extends ApiBaseController {
 
             $this->status = BaseConst::STATUS_SUCCESS;
             $this->data = $wrapperService->getQuestionListWrapper($questionList, $orderStr);
-            $this->msg = "获取最新问题列表成功";
+            $this->msg = "获取热门问题列表成功";
+        } catch (\Exception $e) {
+            $this->printExceptionToLog($e);
+        }
+        return $this->getJsonResponse();
+    }
+
+    /**
+     * @ApiDoc(
+     *  resource = true,
+     *  section = "Question",
+     *  description = "附近问题列表",
+     *  tags = {
+     *      "stable" = "#23fd09",
+     *      "cyy" = "#607d8b"
+     *  },
+     *  parameters = {
+     *      {
+     *          "name" = "OrderStr",
+     *          "dataType" = "string",
+     *          "required" = false,
+     *          "format" = "空或者后台传的字符串",
+     *          "description" = "为空是刷新，不为空则为加载更多"
+     *      },
+     *  },
+     *  output = {
+     *      "class" = "QuestionBundle\Entity\Wrapper\QuestionListWrapper",
+     *  },
+     *  views = {"version1", "default"},
+     * )
+     *
+     * @Route("api/v1/question/list/nearby/", methods="POST")
+     */
+    public function listNearbyAction() {
+        $orderStr = $this->getPost('OrderStr');
+
+        $questionService = $this->get('question.questionservice');
+        $wrapperService = $this->get('question.wrapperservice');
+
+        try {
+            $questionList = $questionService->getNearbyQuestionList($orderStr);
+
+            $this->status = BaseConst::STATUS_SUCCESS;
+            $this->data = $wrapperService->getQuestionListWrapper($questionList, $orderStr);
+            $this->msg = "获取附近问题列表成功";
         } catch (\Exception $e) {
             $this->printExceptionToLog($e);
         }
