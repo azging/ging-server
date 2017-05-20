@@ -45,7 +45,7 @@ class QuestionController extends ApiBaseController {
      *          "description" = "问题描述"
      *      },
      *      {
-     *          "name" = "PhotoUrls",
+     *          "name" = "QuestionUrls",
      *          "dataType" = "string",
      *          "required" = true,
      *          "format" = "最多9张",
@@ -77,7 +77,7 @@ class QuestionController extends ApiBaseController {
     public function publishAction() {
         $title = $this->getPost('Title');
         $description = $this->getPost('Description');
-        $photoUrls = $this->getPost('PhotoUrls');
+        $questionUrls = $this->getPost('QuestionUrls');
         $reward = floatval($this->getPost('Reward'));
         $isAnonymous = intval($this->getPost('IsAnonymous'));
 
@@ -100,7 +100,7 @@ class QuestionController extends ApiBaseController {
 
             $expireTime = TimeUtilService::getDateTimeAfterHours(QuestionConst::QUESTION_EXPIRE_HOURS);
 
-            $question = $questionService->publishQuestion($this->userId, $cityId, $lng, $lat, $title, $description, $photoUrls, $reward, $isAnonymous, $expireTime);
+            $question = $questionService->publishQuestion($this->userId, $cityId, $lng, $lat, $title, $description, $questionUrls, $reward, $isAnonymous, $expireTime);
 
             $this->status = BaseConst::STATUS_SUCCESS;
             $this->data = $wrapperService->getQuestionWrapper($question);
@@ -156,6 +156,50 @@ class QuestionController extends ApiBaseController {
             $this->printExceptionToLog($e);
         }
 
+        return $this->getJsonResponse();
+    }
+
+    /**
+     * @ApiDoc(
+     *  resource = true,
+     *  section = "Question",
+     *  description = "最新问题列表",
+     *  tags = {
+     *      "stable" = "#23fd09",
+     *      "cyy" = "#607d8b"
+     *  },
+     *  parameters = {
+     *      {
+     *          "name" = "OrderStr",
+     *          "dataType" = "string",
+     *          "required" = false,
+     *          "format" = "空或者后台传的字符串",
+     *          "description" = "为空是刷新，不为空则为加载更多"
+     *      },
+     *  },
+     *  output = {
+     *      "class" = "QuestionBundle\Entity\Wrapper\QuestionListWrapper",
+     *  },
+     *  views = {"version1", "default"},
+     * )
+     *
+     * @Route("api/v1/question/list/new/", methods="POST")
+     */
+    public function listHotAction() {
+        $orderStr = $this->getPost('OrderStr');
+
+        $questionService = $this->get('question.questionservice');
+        $wrapperService = $this->get('question.wrapperservice');
+
+        try {
+            $questionList = $questionService->getNewQuestionList($orderStr);
+
+            $this->status = BaseConst::STATUS_SUCCESS;
+            $this->data = $wrapperService->getQuestionListWrapper($questionList, $orderStr);
+            $this->msg = "获取最新问题列表成功";
+        } catch (\Exception $e) {
+            $this->printExceptionToLog($e);
+        }
         return $this->getJsonResponse();
     }
 }

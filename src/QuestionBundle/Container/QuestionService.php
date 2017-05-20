@@ -8,6 +8,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 use BaseBundle\Container\BaseService;
+use UtilBundle\Container\TimeUtilService;
+use UtilBundle\Container\UtilService;
+
+use BaseBundle\Container\BaseConst;
 
 class QuestionService extends BaseService {
     private $questionRepo;
@@ -48,12 +52,12 @@ class QuestionService extends BaseService {
      *
      * 发布问题
      */
-    public function publishQuestion($userId, $cityId, $lng, $lat, $title, $description, $photoUrls, $reward, $isAnonymous, $expireTime) {
+    public function publishQuestion($userId, $cityId, $lng, $lat, $title, $description, $questionUrls, $reward, $isAnonymous, $expireTime) {
         $infoArr = array(
             'UserId' => $userId,
             'Title' => $title,
             'Description' => $description,
-            'PhotoUrls' => $photoUrls,
+            'QuestionUrls' => $questionUrls,
             'Reward' => $reward,
             'IsAnonymous' => $isAnonymous,
             'CityId' => $cityId,
@@ -62,5 +66,35 @@ class QuestionService extends BaseService {
             'ExpireTime' => $expireTime,
         );
         return $this->questionRepo->insertQuestion($infoArr);
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-20
+     *
+     * 最新问题列表
+     */
+    public function getNewQuestionList(&$orderStr) {
+        if (empty($orderStr)) {
+            $orderStr = TimeUtilService::timeToStr(TimeUtilService::getDateTimeAfterMinutes("+5"));
+        }
+
+        $qb = $this->em->createQueryBuilder();
+        $q = $qb->select('q')
+            ->from('QuestionBundle:Question', 'q')
+            ->where('q.createTime < :CreateTime')
+            ->andWhere('q.isValid = 1')
+            ->setParameter('CreateTime', $orderStr)
+            ->addOrderBy('q.createTime', 'DESC')
+            ->setMaxResults(BaseConst::LIST_DEFAULT_NUM)
+            ->getQuery();
+        $questions = $q->getResult();
+
+        if (UtilService::isValidArr($questions)) {
+            $question = end($questions);
+            $orderStr = TimeUtilService::timeToStr($question->getCreateTime());
+        }
+        return $questions;
     }
 }
