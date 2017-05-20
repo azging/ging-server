@@ -2,11 +2,16 @@
 
 namespace QuestionBundle\Entity;
 
+use UtilBundle\Container\TimeUtilService;
+use UtilBundle\Container\StringUtilService;
+use UtilBundle\Container\UtilService;
+
+use QuestionBundle\Container\QuestionConst;
+
 /**
  * Question
  */
-class Question
-{
+class Question implements \JsonSerializable {
     /**
      * @var int
      */
@@ -41,11 +46,6 @@ class Question
      * @var string
      */
     private $photoUrls;
-
-    /**
-     * @var float
-     */
-    private $redPacket;
 
     /**
      * @var float
@@ -238,30 +238,6 @@ class Question
     }
 
     /**
-     * Set redPacket
-     *
-     * @param float $redPacket
-     *
-     * @return Question
-     */
-    public function setRedPacket($redPacket)
-    {
-        $this->redPacket = $redPacket;
-
-        return $this;
-    }
-
-    /**
-     * Get redPacket
-     *
-     * @return float
-     */
-    public function getRedPacket()
-    {
-        return $this->redPacket;
-    }
-
-    /**
      * Set lng
      *
      * @param float $lng
@@ -428,5 +404,230 @@ class Question
     {
         return $this->updateTime;
     }
-}
+    /**
+     * @var integer
+     */
+    private $baseWeight;
 
+    /**
+     * @var integer
+     */
+    private $tempWeight;
+
+    /**
+     * @var integer
+     */
+    private $weight;
+
+
+    /**
+     * Set baseWeight
+     *
+     * @param integer $baseWeight
+     *
+     * @return Question
+     */
+    public function setBaseWeight($baseWeight)
+    {
+        $this->baseWeight = $baseWeight;
+
+        return $this;
+    }
+
+    /**
+     * Get baseWeight
+     *
+     * @return integer
+     */
+    public function getBaseWeight()
+    {
+        return $this->baseWeight;
+    }
+
+    /**
+     * Set tempWeight
+     *
+     * @param integer $tempWeight
+     *
+     * @return Question
+     */
+    public function setTempWeight($tempWeight)
+    {
+        $this->tempWeight = $tempWeight;
+
+        return $this;
+    }
+
+    /**
+     * Get tempWeight
+     *
+     * @return integer
+     */
+    public function getTempWeight()
+    {
+        return $this->tempWeight;
+    }
+
+    /**
+     * Set weight
+     *
+     * @param integer $weight
+     *
+     * @return Question
+     */
+    public function setWeight($weight)
+    {
+        $this->weight = $weight;
+
+        return $this;
+    }
+
+    /**
+     * Get weight
+     *
+     * @return integer
+     */
+    public function getWeight()
+    {
+        return $this->weight;
+    }
+
+    function __construct() {
+        $nowTime = TimeUtilService::getCurrentDateTime();
+        $this->setQuid('');
+        $this->setUserId(0);
+        $this->setTitle('');
+        $this->setDescription('');
+        $this->setPhotoUrls('');
+        $this->setIsAnonymous(0);
+        $this->setReward(0);
+        $this->setCityId(0);
+        $this->setLat(0);
+        $this->setLng(0);
+        $this->setBaseWeight(0);
+        $this->setTempWeight(0);
+        $this->setWeight(0);
+        $this->setStatus(0);
+        $this->setPayStatus(0);
+        $this->setExpireTime($nowTime);
+        $this->setIsValid(0);
+        $this->setCreateTime($nowTime);
+        $this->setUpdateTime($nowTime);
+    }
+
+    function jsonSerialize() {
+        $photoUrlArr = json_decode($this->photoUrls);
+        $num = count($photoUrlArr);
+        $thumbPhotoUrlArr = array();
+        if (UtilService::isValidArr($photoUrlArr)) {
+            foreach ($photoUrlArr as $photoUrl) {
+                $thumbPhotoUrl = $photoUrl . QuestionConst::PHOTO_THUMB_SUFFIX;
+                $thumbPhotoUrlArr[] = $thumbPhotoUrl;
+            }
+        }
+        $result = array(
+            'Quid' => $this->quid,
+            'Title' => $this->title,
+            'Description' => $this->description,
+            'IsAnonymous' => intval($this->isAnonymous),
+            'Reward' => floatval($this->reward),
+            'PhotoUrls' => $photoUrlArr,
+            'ThumbPhotoUrls' => $thumbPhotoUrlArr,
+            'CityId' => intval($this->cityId),
+            'Status' => intval($this->status),
+            'PayStatus' => intval($this->payStatus),
+            'ExpireTime' => TimeUtilService::timeToStr($this->expireTime),
+            'CreateTime' => TimeUtilService::timeToStr($this->createTime),
+            'UpdateTime' => TimeUtilService::timeToStr($this->updateTime),
+        );
+        return UtilService::getNotNullValueArray($result);
+    }
+    /**
+     * @var float
+     */
+    private $reward;
+
+    /**
+     * @var integer
+     */
+    private $cityId;
+
+
+    /**
+     * Set reward
+     *
+     * @param float $reward
+     *
+     * @return Question
+     */
+    public function setReward($reward)
+    {
+        $this->reward = $reward;
+
+        return $this;
+    }
+
+    /**
+     * Get reward
+     *
+     * @return float
+     */
+    public function getReward()
+    {
+        return $this->reward;
+    }
+
+    /**
+     * Set cityId
+     *
+     * @param integer $cityId
+     *
+     * @return Question
+     */
+    public function setCityId($cityId)
+    {
+        $this->cityId = $cityId;
+
+        return $this;
+    }
+
+    /**
+     * Get cityId
+     *
+     * @return integer
+     */
+    public function getCityId()
+    {
+        return $this->cityId;
+    }
+
+    /**
+     * @var \DateTime
+     */
+    private $expireTime;
+
+
+    /**
+     * Set expireTime
+     *
+     * @param \DateTime $expireTime
+     *
+     * @return Question
+     */
+    public function setExpireTime($expireTime)
+    {
+        $this->expireTime = $expireTime;
+
+        return $this;
+    }
+
+    /**
+     * Get expireTime
+     *
+     * @return \DateTime
+     */
+    public function getExpireTime()
+    {
+        return $this->expireTime;
+    }
+}

@@ -1,0 +1,50 @@
+PlaceBundle\Entity\PlaceProvince:
+    type: entity
+    table: null
+    repositoryClass: PlaceBundle\Repository\PlaceProvinceRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+
+    fields:
+        provinceId:
+            type: integer
+            column: 'province_id'
+            unique: true
+            options:
+                comment: 'unique key of province, 6 digital'
+                default: 0
+        provinceName:
+            type: string
+            length: '100'
+            column: 'province_name'
+            options:
+                comment: 'province name'
+                default: ''
+        isValid:
+            type: smallint
+            column: 'is_valid'
+            options:
+                comment: '0 for invalid province, 1 for valid province'
+                default: 0
+        createTime:
+            type: datetime
+            column: 'create_time'
+            options:
+                comment: 'province create time'
+        updateTime:
+            type: datetime
+            column: 'update_time'
+            options:
+                comment: 'latest update time of province info'
+            
+    indexes:
+        idx_place_province_normal1:
+            columns: [province_id, is_valid]
+            type: normal
+
+    lifecycleCallbacks: {  }
+

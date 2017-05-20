@@ -11,7 +11,7 @@ use UserBundle\Container\UserConst;
 /**
  * User
  */
-class User  implements \JsonSerializable {
+class User implements \JsonSerializable {
     /**
      * @var int
      */

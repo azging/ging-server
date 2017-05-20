@@ -2,6 +2,14 @@
 
 namespace QuestionBundle\Repository;
 
+use BaseBundle\Container\BaseConst;
+use QuestionBundle\Container\QuestionConst;
+
+use UtilBundle\Container\StringUtilService;
+use UtilBundle\Container\TimeUtilService;
+
+use QuestionBundle\Entity\Question;
+
 /**
  * QuestionRepository
  *
@@ -10,4 +18,67 @@ namespace QuestionBundle\Repository;
  */
 class QuestionRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-19
+     *
+     * 根据某个字段查找Question
+     */
+    public function selectOneQuestionByProp($prop, $value, $isValid = true) {
+        if ($isValid) {
+            $question = $this->_em->getRepository('QuestionBundle:Question')->findOneBy(array($prop => $value, 'isValid' => BaseConst::IS_VALID_TRUE));
+        } else {
+            $func = 'findOneBy' . ucfirst($prop);
+            $question = $this->_em->getRepository('QuestionBundle:Question')->$func($value);
+        }
+        return $question;
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-19
+     *
+     * 将问题信息插入数据库中
+     */
+    public function insertQuestion($infoArr = array()) {
+        $question = new Question();
+
+        $quid = StringUtilService::getGuid();
+        $question->setQuid($quid);
+        $nowTime = TimeUtilService::getCurrentDateTime();
+        $question->setCreateTime($nowTime);
+        $weight = QuestionConst::QUESTION_DEFAULT_WEIGHT + (intval(time()) - 1495123200) / 10800;
+        $question->setWeight($weight);
+        $question->setBaseWeight($weight);
+        $question->setIsValid(BaseConst::IS_VALID_TRUE);
+
+        $question = $this->updateQuestion($question, $infoArr);
+
+        return $question;
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-19
+     *
+     * 更新问题信息
+     */
+    public function updateQuestion($question, $infoArr = array()) {
+        if (is_array($infoArr)) {
+            while (list($key, $value) = each($infoArr)) {
+                $func = 'set' . $key;
+                $question->$func($value);
+            }
+        }
+        $nowTime = TimeUtilService::getCurrentDateTime();
+        $question->setUpdateTime($nowTime);
+
+        $this->_em->persist($question);
+        $this->_em->flush($question);
+
+        return $question;
+    }
 }

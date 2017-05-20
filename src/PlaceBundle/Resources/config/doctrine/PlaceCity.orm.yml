@@ -1,0 +1,75 @@
+PlaceBundle\Entity\PlaceCity:
+    type: entity
+    table: null
+    repositoryClass: PlaceBundle\Repository\PlaceCityRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+
+    fields:
+        provinceId:
+            type: integer
+            column: 'province_id'
+            options:
+                comment: 'foreign key of place_province'
+                default: 0
+        cityId:
+            type: integer
+            column: 'city_id'
+            unique: true
+            options:
+                comment: 'unique key of city, 6 digital'
+                default: 0
+        cityName:
+            type: string
+            length: '100'
+            column: 'city_name'
+            options:
+                comment: 'city name'
+                default: ''
+        cityShortName:
+            type: string
+            length: '20'
+            column: 'city_short_name'
+            options:
+                comment: 'abbreviation of city name'
+                default: ''
+        isOpen:
+            type: smallint
+            column: 'is_open'
+            options:
+                comment: 'is city open for users'
+                default: 0
+        weight:
+            type: integer
+            column: 'weight'
+            options:
+                comment: 'weight of city, descript prevalence of city'
+                default: 0
+        isValid:
+            type: smallint
+            column: 'is_valid'
+            options:
+                comment: '0 for invalid city, 1 for valid city'
+                default: 0
+        createTime:
+            type: datetime
+            column: 'create_time'
+            options:
+                comment: 'city create time'
+        updateTime:
+            type: datetime
+            column: 'update_time'
+            options:
+                comment: 'latest update time of city info'
+
+    indexes:
+        idx_place_city_normal1:
+            columns: [city_id, is_valid, weight]
+            type: normal
+
+    lifecycleCallbacks: {  }
+

@@ -26,8 +26,12 @@ QuestionBundle\Entity\Question:
         photoUrls:
             type: string
             length: '600'
-        redPacket:
+        reward:
             type: float
+        expireTime:
+            type: datetime
+        cityId:
+            type: integer
         lng:
             type: float
         lat:
@@ -36,6 +40,12 @@ QuestionBundle\Entity\Question:
             type: smallint
         payStatus:
             type: smallint
+        baseWeight:
+            type: integer
+        tempWeight:
+            type: integer
+        weight:
+            type: integer
         isValid:
             type: smallint
         createTime:

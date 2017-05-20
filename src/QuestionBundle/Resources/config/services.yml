@@ -1,4 +1,10 @@
 services:
+    question.questionservice:
+        class: QuestionBundle\Container\QuestionService
+        arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
+    question.wrapperservice:
+        class: QuestionBundle\Container\WrapperService
+        arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
 #    question.example:
 #        class: QuestionBundle\Example
 #        arguments: ["@service_id", "plain_value", "%parameter%"]

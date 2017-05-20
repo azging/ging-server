@@ -1,3 +1,8 @@
+place:
+    resource: "@PlaceBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
 question:
     resource: "@QuestionBundle/Controller/"
     type:     annotation
@@ -20,4 +25,5 @@ user:
 
 app:
     resource: '@AppBundle/Controller/'
-    type: annotation
+    type:     annotation
+    prefix:   /
