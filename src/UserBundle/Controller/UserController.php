@@ -207,18 +207,25 @@ class UserController extends ApiBaseController {
      * @ApiDoc(
      *  resource = true,
      *  section = "User",
-     *  description = "使用微信注册或登录",
+     *  description = "使用第三方注册或登录",
      *  tags = {
      *      "stable" = "#23fd09",
      *      "cyy" = "#607d8b"
      *  },
      *  parameters = {
      *      {
-     *          "name" = "WechatId",
+     *          "name" = "Type",
+     *          "dataType" = "integer",
+     *          "required" = true,
+     *          "format" = "2",
+     *          "description" = "0为未知，2为微信"
+     *      },
+     *      {
+     *          "name" = "SocialId",
      *          "dataType" = "string",
      *          "required" = true,
      *          "format" = "",
-     *          "description" = "微信用户唯一id",
+     *          "description" = "用户第三方账号唯一id",
      *      },
      *      {
      *          "name" = "Nick",
@@ -248,30 +255,34 @@ class UserController extends ApiBaseController {
      *  views = {"version1", "default"},
      * )
      *
-     * @Route("/api/v1/user/login/wechat/", methods="POST")
+     * @Route("/api/v1/user/login/social/", methods="POST")
      */
-    public function loginByWechatAction() {
-        $wechatId = $this->getPost('WechatId');
+    public function loginBySocialAction() {
+        $type = intval($this->getPost('Type'));
+        $socialId = $this->getPost('SocialId');
         $nick = $this->getPost('Nick');
         $avatarUrl = $this->getPost('AvatarUrl');
-        $gender = $this->getPost('Gender');
+        $gender = intval($this->getPost('Gender'));
 
         $userService = $this->get('user.userservice');
         $wrapperService = $this->get('user.wrapperservice');
 
         try {
-            StringUtilService::checkIsValidString($wechatId, "微信ID错误");
+            if ($type <= 0) {
+                $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, "未知的登录类型");
+            }
+            StringUtilService::checkIsValidString($socialId, "第三方ID错误");
             StringUtilService::checkIsValidString($nick, "昵称为空");
             StringUtilService::checkIsValidString($avatarUrl, "头像为空");
 
-            $user = $userService->getUserByWechatId($wechatId, true);
+            $user = $userService->getUserBySocialId($type, $socialId, true);
             if (!UtilService::isValidObj($user)) {
-                $user = $userService->registerByWechat($wechatId, $nick, $avatarUrl, $gender);
+                $user = $userService->registerBySocial($type, $socialId, $nick, $avatarUrl, $gender);
             }
 
             $this->status = BaseConst::STATUS_SUCCESS;
             $this->data = $wrapperService->getUserWrapper($user);
-            $this->msg = '微信登录成功';
+            $this->msg = '使用第三方账号登录成功';
         } catch (\Exception $e) {
             $this->printExceptionToLog($e);
         }

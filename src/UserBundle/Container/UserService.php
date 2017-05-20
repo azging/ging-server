@@ -13,6 +13,8 @@ use UtilBundle\Container\StringUtilService;
 
 use BaseBundle\Container\BaseConst;
 
+use UserBundle\Entity\User;
+
 
 class UserService extends BaseService {
     private $userRepo;
@@ -86,7 +88,24 @@ class UserService extends BaseService {
      *
      * 2017-05-18
      *
-     * get user by 微信
+     * 通过第三方账号查找用户
+     */
+    public function getUserBySocialId($type, $socialId, $isValid = true) {
+        $user = new User();
+        switch ($type) {
+            case UserConst::USER_LOGIN_TYPE_WECHAT:
+                $user = $this->getUserByWechatId($socialId, $isValid);
+                break;
+        }
+        return $user;
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-18
+     *
+     * 通过微信查找用户
      */
     public function getUserByWechatId($wechatId, $isValid = true) {
         return $this->userRepo->selectOneUserByProp('wechatId', $wechatId, $isValid);
@@ -138,6 +157,23 @@ class UserService extends BaseService {
             'Nick' => $nick,
             'LoginType' => UserConst::USER_LOGIN_TYPE_TELEPHONE,
         );
+        return $this->userRepo->insertUser($infoArr);
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-18
+     *
+     * 通过第三方账号注册用户
+     */
+    public function registerBySocial($type, $socialId, $nick, $avatarUrl, $gender) {
+        $user = new User();
+        switch ($type) {
+            case UserConst::USER_LOGIN_TYPE_WECHAT:
+                $user = $this->registerByWechat($socialId, $nick, $avatarUrl, $gender);
+                break;
+        }
         return $this->userRepo->insertUser($infoArr);
     }
 
