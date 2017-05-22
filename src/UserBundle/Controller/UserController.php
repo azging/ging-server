@@ -14,6 +14,7 @@ use UtilBundle\Container\UtilService;
 
 use BaseBundle\Container\BaseConst;
 use UserBundle\Container\PhoneConst;
+use UserBundle\Container\UserConst;
 
 class UserController extends ApiBaseController {
     public function __construct() {
@@ -323,6 +324,89 @@ class UserController extends ApiBaseController {
             $this->printExceptionToLog($e);
         }
 
+        return $this->getJsonResponse();
+    }
+
+    /**
+     * @ApiDoc(
+     *  resource = true,
+     *  section = "User",
+     *  description = "用户修改信息",
+     *  tags = {
+     *      "stable" = "#23fd09",
+     *      "cyy" = "#607d8b",
+     *  },
+     *  parameters = {
+     *      {
+     *          "name" = "Nick",
+     *          "dataType" = "string",
+     *          "required" = true,
+     *          "format" = "20个字以内",
+     *          "description" = "昵称",
+     *      },
+     *      {
+     *          "name" = "AvatarUrl",
+     *          "dataType" = "string",
+     *          "required" = true,
+     *          "format" = "url",
+     *          "description" = "头像"
+     *      },
+     *      {
+     *          "name" = "Gender",
+     *          "dataType" = "integer",
+     *          "required" = false,
+     *          "format" = "0,1,2",
+     *          "description" = "性别，0未知，1男，2女"
+     *      },
+     *  },
+     *  output = {
+     *      "class" = "UserBundle\Entity\Wrapper\UserWrapper",
+     *  },
+     *  views = {"version1", "default"},
+     * )
+     *
+     * @Route("api/v1/user/info/update/", methods="POST")
+     */
+    public function updateInfoAction() {
+        $nick       = $this->getPost('Nick');
+        $avatarUrl  = $this->getPost('AvatarUrl');
+        $gender     = intval($this->getPost('Gender'));
+
+        $userService  = $this->get('user.userservice');
+        $wrapperService = $this->get('user.wrapperservice');
+
+        try {
+            $this->checkIfLogin(true);
+            StringUtilService::checkIsValidString($nick, '昵称不能为空');
+            StringUtilService::checkIsValidString($avatarUrl, "头像不能为空");
+            
+            // 检查昵称是否可用
+            if ($nick != $this->user->getNick()) {
+                $reason = "昵称不合法";
+                if (!StringUtilService::isValidNick($nick, $reason)) {
+                    $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, $reason);
+                }
+            }
+
+            if (empty($gender)) {
+                $gender = UserConst::USER_GENDER_DEFAULT;
+            }
+            if (empty($stature)) {
+                $stature = 0;
+            }
+            $infoArr = array(
+                'Nick'          => $nick,
+                'AvatarUrl'     => $avatarUrl,
+                'Gender'        => $gender,
+            );
+            $user = $userService->updateUserInfo($this->user, $infoArr);
+
+            $this->status = BaseConst::STATUS_SUCCESS;
+            $this->data = $wrapperService->getUserWrapper($user);
+            $this->msg = "更新用户信息成功";
+        } catch (\Exception $e) {
+            $this->printExceptionToLog($e);
+        }
         return $this->getJsonResponse();
     }
 }
