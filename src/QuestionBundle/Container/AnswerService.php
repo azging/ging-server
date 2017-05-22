@@ -12,6 +12,7 @@ use UtilBundle\Container\TimeUtilService;
 use UtilBundle\Container\UtilService;
 
 use BaseBundle\Container\BaseConst;
+use QuestionBundle\Container\AnswerConst;
 
 class AnswerService extends BaseService {
     private $questionAnswerRepo;
@@ -83,6 +84,48 @@ class AnswerService extends BaseService {
             ->setParameter('CreateTime', $orderStr)
             ->setParameter('QuestionId', $questionId)
             ->addOrderBy('qa.createTime', 'DESC')
+            ->setMaxResults(BaseConst::LIST_DEFAULT_NUM)
+            ->getQuery();
+        $answerArr = $q->getResult();
+
+        if (UtilService::isValidArr($answerArr)) {
+            $answer = end($answerArr);
+            $orderStr = TimeUtilService::timeToStr($answer->getCreateTime());
+        }
+        return $answerArr;
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-22
+     *
+     * 根据状态类型查找用户的回答列表
+     */
+    public function getUserAnswerListByStatusType($userId, $statusType, &$orderStr) {
+        if (empty($orderStr)) {
+            $orderStr = TimeUtilService::timeToStr(TimeUtilService::getDateTimeAfterMinutes("+5"));
+        }
+
+        $qb = $this->em->createQueryBuilder();
+        $q = $qb->select('qa')
+            ->from('QuestionBundle:QuestionAnswer', 'qa')
+            ->where('qa.createTime < :CreateTime')
+            ->andWhere('qa.isValid = 1')
+            ->andWhere('qa.userId = :UserId')
+            ->setParameter('UserId', $userId)
+            ->setParameter('CreateTime', $orderStr);
+
+        switch ($statusType) {
+            case AnswerConst::ANSWER_STATUS_TYPE_ALL:
+                break;
+            case AnswerConst::ANSWER_STATUS_TYPE_ADOPTED:
+                $q = $q->andWhere('qa.status = :StatusAdopted')
+                    ->setParameter('StatusAdopted', AnswerConst::ANSWER_STATUS_ADOPTED);
+                break;
+        }
+
+        $q = $q->addOrderBy('qa.createTime', 'DESC')
             ->setMaxResults(BaseConst::LIST_DEFAULT_NUM)
             ->getQuery();
         $answerArr = $q->getResult();

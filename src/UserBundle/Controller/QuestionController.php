@@ -11,7 +11,7 @@ use BaseBundle\Controller\ApiBaseController;
 use BaseBundle\Container\BaseConst;
 use QuestionBundle\Container\QuestionConst;
 
-class UserQuestionController extends ApiBaseController {
+class QuestionController extends ApiBaseController {
     public function __construct() {
         parent::__construct(__FILE__);
     }
