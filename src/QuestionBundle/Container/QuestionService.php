@@ -228,4 +228,19 @@ class QuestionService extends BaseService {
         }
         return $questionArr;
     }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-22
+     *
+     * 更新回答数量
+     */
+    public function updateQuestionAnswerNum($question, $answerNum) {
+        $infoArr = array(
+            'AnswerNum' => $answerNum,
+        );
+
+        return $this->questionRepo->updateQuestion($question, $infoArr);
+    }
 }

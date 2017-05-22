@@ -13,6 +13,7 @@ use UtilBundle\Container\TimeUtilService;
 use UtilBundle\Container\StringUtilService;
 
 use QuestionBundle\Entity\Wrapper\QuestionWrapper;
+use QuestionBundle\Entity\Wrapper\QuestionAnswerWrapper;
 use QuestionBundle\Entity\Wrapper\QuestionListWrapper;
 
 class WrapperService extends BaseService {
@@ -65,6 +66,34 @@ class WrapperService extends BaseService {
         }
         $wrapper->setQuestionWrapperList($questionWrapperList);
         $wrapper->setOrderStr($orderStr);
+
+        return $wrapper;
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-22
+     *
+     * 返回QuestionAnswer的Wrapper
+     */
+    public function getQuestionAnswerWrapper($questionAnswer, $showUser = true) {
+        if (!UtilService::isValidObj($questionAnswer)) {
+            return array();
+        }
+        $userService = $this->getUserService();
+        $userWrapperService = $this->getUserWrapperService();
+
+        $wrapper = new QuestionAnswerWrapper();
+
+        $wrapper->setQuestionAnswer($questionAnswer);
+
+        $userWrapper = null;
+        if ($showUser) {
+            $user = $userService->getUserById($questionAnswer->getUserId());
+            $userWrapper = $userWrapperService->getUserWrapper($user);
+        }
+        $wrapper->setUserWrapper($userWrapper);
 
         return $wrapper;
     }

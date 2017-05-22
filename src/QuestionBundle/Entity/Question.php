@@ -510,6 +510,7 @@ class Question implements \JsonSerializable {
         $this->setStatus(0);
         $this->setPayStatus(0);
         $this->setExpireTime($nowTime);
+        $this->setAnswerNum(0);
         $this->setIsValid(0);
         $this->setCreateTime($nowTime);
         $this->setUpdateTime($nowTime);
@@ -536,6 +537,7 @@ class Question implements \JsonSerializable {
             'CityId' => intval($this->cityId),
             'Status' => intval($this->status),
             'PayStatus' => intval($this->payStatus),
+            'AnswerNum' => intval($this->answerNum),
             'ExpireTime' => TimeUtilService::timeToStr($this->expireTime),
             'CreateTime' => TimeUtilService::timeToStr($this->createTime),
             'UpdateTime' => TimeUtilService::timeToStr($this->updateTime),
@@ -629,5 +631,34 @@ class Question implements \JsonSerializable {
     public function getExpireTime()
     {
         return $this->expireTime;
+    }
+    /**
+     * @var integer
+     */
+    private $AnswerNum;
+
+
+    /**
+     * Set answerNum
+     *
+     * @param integer $answerNum
+     *
+     * @return Question
+     */
+    public function setAnswerNum($answerNum)
+    {
+        $this->AnswerNum = $answerNum;
+
+        return $this;
+    }
+
+    /**
+     * Get answerNum
+     *
+     * @return integer
+     */
+    public function getAnswerNum()
+    {
+        return $this->AnswerNum;
     }
 }

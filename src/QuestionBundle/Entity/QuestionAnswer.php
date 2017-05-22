@@ -2,11 +2,13 @@
 
 namespace QuestionBundle\Entity;
 
+use UtilBundle\Container\TimeUtilService;
+use UtilBundle\Container\UtilService;
+
 /**
  * QuestionAnswer
  */
-class QuestionAnswer
-{
+class QuestionAnswer implements \JsonSerializable {
     /**
      * @var int
      */
@@ -311,6 +313,33 @@ class QuestionAnswer
     public function getUpdateTime()
     {
         return $this->updateTime;
+    }
+
+    function __construct() {
+        $nowTime = TimeUtilService::getCurrentDateTime();
+        $this->setAuid('');
+        $this->setQuestionId(0);
+        $this->setUserId(0);
+        $this->setContent('');
+        $this->setType(0);
+        $this->setStatus(0);
+        $this->setPayStatus(0);
+        $this->setIsValid(0);
+        $this->setCreateTime($nowTime);
+        $this->setUpdateTime($nowTime);
+    }
+
+    function jsonSerialize() {
+        $arr = array(
+            'Auid' => $this->auid,
+            'Type' => $this->type,
+            'Content' => $this->content,
+            'Status' => $this->status,
+            'PayStatus' => $this->payStatus,
+            'CreateTime' => TimeUtilService::timeToStr($this->createTime),
+            'UpdateTime' => TimeUtilService::timeToStr($this->updateTime),
+        );
+        return UtilService::getNotNullValueArray($arr);
     }
 }
 

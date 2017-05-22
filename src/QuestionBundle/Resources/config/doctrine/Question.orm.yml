@@ -46,6 +46,8 @@ QuestionBundle\Entity\Question:
             type: integer
         weight:
             type: integer
+        AnswerNum:
+            type: integer
         isValid:
             type: smallint
         createTime:

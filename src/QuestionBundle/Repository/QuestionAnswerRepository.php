@@ -2,6 +2,14 @@
 
 namespace QuestionBundle\Repository;
 
+use UtilBundle\Container\UtilService;
+use UtilBundle\Container\TimeUtilService;
+use UtilBundle\Container\StringUtilService;
+
+use QuestionBundle\Entity\QuestionAnswer;
+
+use BaseBundle\Container\BaseConst;
+
 /**
  * QuestionAnswerRepository
  *
@@ -10,4 +18,65 @@ namespace QuestionBundle\Repository;
  */
 class QuestionAnswerRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-22
+     *
+     * 将回答数据写入数据库
+     */
+    public function insertAnswer($infoArr = array()) {
+        $questionAnswer = new QuestionAnswer();
+
+        $auid = StringUtilService::getGuid();
+        $questionAnswer->setAuid($auid);
+        $questionAnswer->setIsValid(BaseConst::IS_VALID_TRUE);
+
+        $questionAnswer = $this->updateAnswer($questionAnswer, $infoArr);
+
+        return $questionAnswer;
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-22
+     *
+     * 更新回答数据
+     */
+    public function updateAnswer($questionAnswer, $infoArr = array()) {
+        if (UtilService::isValidArr($infoArr)) {
+            while (list($key, $value) = each($infoArr)) {
+                $func = 'set' . $key;
+                $questionAnswer->$func($value);
+            }
+        }
+        $nowTime = TimeUtilService::getCurrentDateTime();
+        $questionAnswer->setUpdateTime($nowTime);
+        $this->_em->persist($questionAnswer);
+        $this->_em->flush($questionAnswer);
+
+        return $questionAnswer;
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-22
+     *
+     * 根据某个字段查找QuestionAnswer
+     */
+    public function selectOneAnswerByProp($prop, $value, $isValid = true) {
+        $comment = null;
+        if (empty($prop)) {
+            return null;
+        }
+        if ($isValid) {
+            $comment = $this->_em->getRepository('QuestionBundle:QuestionAnswer')->findOneBy(array($prop => $value, 'isValid' => BaseConst::IS_VALID_TRUE));
+        } else {
+            $func = 'findOneBy' . ucfirst($prop);
+            $comment = $this->_em->getRepository('QuestionBundle:QuestionAnswer')->$func($value);
+        }
+        return $comment;
+    }
 }

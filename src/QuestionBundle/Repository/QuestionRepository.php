@@ -47,8 +47,6 @@ class QuestionRepository extends \Doctrine\ORM\EntityRepository
 
         $quid = StringUtilService::getGuid();
         $question->setQuid($quid);
-        $nowTime = TimeUtilService::getCurrentDateTime();
-        $question->setCreateTime($nowTime);
         $weight = QuestionConst::QUESTION_DEFAULT_WEIGHT + (intval(time()) - 1495123200) / 10800;
         $question->setWeight($weight);
         $question->setBaseWeight($weight);

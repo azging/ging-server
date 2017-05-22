@@ -2,6 +2,9 @@ services:
     question.questionservice:
         class: QuestionBundle\Container\QuestionService
         arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
+    question.answerservice:
+        class: QuestionBundle\Container\AnswerService
+        arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
     question.wrapperservice:
         class: QuestionBundle\Container\WrapperService
         arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
