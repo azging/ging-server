@@ -180,4 +180,52 @@ class QuestionService extends BaseService {
         }
         return $questionArr;
     }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-20
+     *
+     * 根据状态类型查找用户的提问列表
+     */
+    public function getUserQuestionListByStatusType($userId, $statusType, &$orderStr) {
+        if (empty($orderStr)) {
+            $orderStr = TimeUtilService::timeToStr(TimeUtilService::getDateTimeAfterMinutes("+5"));
+        }
+
+        $qb = $this->em->createQueryBuilder();
+        $q = $qb->select('q')
+            ->from('QuestionBundle:Question', 'q')
+            ->where('q.createTime < :CreateTime')
+            ->andWhere('q.isValid = 1')
+            ->andWhere('q.userId = :UserId')
+            ->setParameter('UserId', $userId)
+            ->setParameter('CreateTime', $orderStr);
+
+        switch ($statusType) {
+            case QuestionConst::QUESTION_STATUS_TYPE_ALL:
+                break;
+            case QuestionConst::QUESTION_STATUS_TYPE_UNSOLVED:
+                $q = $q->andWhere('q.status = :StatusAnswer or q.status = :StatusNoAnswer or q.status = :StatusUnAdopted')
+                    ->setParameter('StatusAnswer', QuestionConst::QUESTION_STATUS_ANSWERING)
+                    ->setParameter('StatusNoAnswer', QuestionConst::QUESTION_STATUS_EXPIRED_NO_ANSWER)
+                    ->setParameter('StatusUnAdopted', QuestionConst::QUESTION_STATUS_EXPIRED_UNADOPTED);
+                break;
+            case QuestionConst::QUESTION_STATUS_TYPE_SOLVED:
+                $q = $q->andWhere('q.status = :StatusAdopted')
+                    ->setParameter('StatusAdopted', QuestionConst::QUESTION_STATUS_ADOPTED);
+                break;
+        }
+
+        $q = $q->addOrderBy('q.createTime', 'DESC')
+            ->setMaxResults(BaseConst::LIST_DEFAULT_NUM)
+            ->getQuery();
+        $questionArr = $q->getResult();
+
+        if (UtilService::isValidArr($questionArr)) {
+            $question = end($questionArr);
+            $orderStr = TimeUtilService::timeToStr($question->getCreateTime());
+        }
+        return $questionArr;
+    }
 }
