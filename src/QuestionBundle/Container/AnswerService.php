@@ -69,7 +69,7 @@ class AnswerService extends BaseService {
      *
      * 最新回答列表
      */
-    public function getNewAnswerList(&$orderStr) {
+    public function getNewAnswerList($questionId, &$orderStr) {
         if (empty($orderStr)) {
             $orderStr = TimeUtilService::timeToStr(TimeUtilService::getDateTimeAfterMinutes("+5"));
         }
@@ -79,7 +79,9 @@ class AnswerService extends BaseService {
             ->from('QuestionBundle:QuestionAnswer', 'qa')
             ->where('qa.createTime < :CreateTime')
             ->andWhere('qa.isValid = 1')
+            ->andWhere('qa.questionId = :QuestionId')
             ->setParameter('CreateTime', $orderStr)
+            ->setParameter('QuestionId', $questionId)
             ->addOrderBy('qa.createTime', 'DESC')
             ->setMaxResults(BaseConst::LIST_DEFAULT_NUM)
             ->getQuery();

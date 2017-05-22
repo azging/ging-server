@@ -12,8 +12,9 @@ use UtilBundle\Container\UtilService;
 use UtilBundle\Container\TimeUtilService;
 use UtilBundle\Container\StringUtilService;
 
+use QuestionBundle\Entity\Wrapper\AnswerWrapper;
+use QuestionBundle\Entity\Wrapper\AnswerListWrapper;
 use QuestionBundle\Entity\Wrapper\QuestionWrapper;
-use QuestionBundle\Entity\Wrapper\QuestionAnswerWrapper;
 use QuestionBundle\Entity\Wrapper\QuestionListWrapper;
 
 class WrapperService extends BaseService {
@@ -75,25 +76,46 @@ class WrapperService extends BaseService {
      *
      * 2017-05-22
      *
-     * 返回QuestionAnswer的Wrapper
+     * 返回Answer的Wrapper
      */
-    public function getQuestionAnswerWrapper($questionAnswer, $showUser = true) {
-        if (!UtilService::isValidObj($questionAnswer)) {
+    public function getAnswerWrapper($answer, $showUser = true) {
+        if (!UtilService::isValidObj($answer)) {
             return array();
         }
         $userService = $this->getUserService();
         $userWrapperService = $this->getUserWrapperService();
 
-        $wrapper = new QuestionAnswerWrapper();
+        $wrapper = new AnswerWrapper();
 
-        $wrapper->setQuestionAnswer($questionAnswer);
+        $wrapper->setAnswer($answer);
 
         $userWrapper = null;
         if ($showUser) {
-            $user = $userService->getUserById($questionAnswer->getUserId());
+            $user = $userService->getUserById($answer->getUserId());
             $userWrapper = $userWrapperService->getUserWrapper($user);
         }
         $wrapper->setUserWrapper($userWrapper);
+
+        return $wrapper;
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-22
+     *
+     * 返回AnswerWrapper的List
+     */
+    public function getAnswerListWrapper($answerList, $orderStr, $showUser = true) {
+        $wrapper = new AnswerListWrapper();
+
+        $answerWrapperList = array();
+        foreach ($answerList as $answer) {
+            $answerWrapper = $this->getAnswerWrapper($answer, $showUser);
+            $answerWrapperList[] = $answerWrapper;
+        }
+        $wrapper->setAnswerWrapperList($answerWrapperList);
+        $wrapper->setOrderStr($orderStr);
 
         return $wrapper;
     }

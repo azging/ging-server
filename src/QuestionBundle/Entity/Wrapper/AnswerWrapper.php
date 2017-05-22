@@ -7,7 +7,7 @@ use UtilBundle\Container\UtilService;
 use QuestionBundle\Entity\QuestionAnswer;
 use UserBundle\Entity\Wrapper\UserWrapper;
 
-class QuestionAnswerWrapper implements \JsonSerializable {
+class AnswerWrapper implements \JsonSerializable {
 
     /**
      * @var User
@@ -17,11 +17,11 @@ class QuestionAnswerWrapper implements \JsonSerializable {
     /**
      * @var QuestionAnswer
      */
-    private $questionAnswer;
+    private $answer;
 
     public function __construct() {
         $this->userWrapper = new UserWrapper();
-        $this->questionAnswer = new QuestionAnswer();
+        $this->answer = new QuestionAnswer();
     }
 
     public function setUserWrapper($userWrapper) {
@@ -30,15 +30,15 @@ class QuestionAnswerWrapper implements \JsonSerializable {
         return $this;
     }
 
-    public function setQuestionAnswer($questionAnswer) {
-        $this->questionAnswer = $questionAnswer;
+    public function setAnswer($answer) {
+        $this->answer = $answer;
 
         return $this;
     }
 
     public function jsonSerialize() {
         $arr = array(
-            'QuestionAnswer' => $this->questionAnswer, 
+            'Answer' => $this->answer, 
             'CreateUserWrapper' => $this->userWrapper,
         );
         return UtilService::getNotNullValueArray($arr);

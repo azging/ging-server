@@ -4,7 +4,7 @@ namespace QuestionBundle\Entity\Wrapper;
 
 use UtilBundle\Container\UtilService;
 
-class QuestionListWrapper implements \JsonSerializable {
+class AnswerListWrapper implements \JsonSerializable {
     /**
      * @var array
      */
@@ -20,7 +20,7 @@ class QuestionListWrapper implements \JsonSerializable {
         $this->orderStr = '';
     }
 
-    public function setQuestionWrapperList($list) {
+    public function setAnswerWrapperList($list) {
         $this->wrapperList = $list;
 
         return $this;
@@ -34,7 +34,7 @@ class QuestionListWrapper implements \JsonSerializable {
 
     public function jsonSerialize() {
         $arr = array(
-            "QuestionWrapperList" => $this->wrapperList,
+            "AnswerWrapperList" => $this->wrapperList,
             'OrderStr' => strval($this->orderStr),
         );
         return UtilService::getNotNullValueArray($arr);

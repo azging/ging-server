@@ -90,7 +90,7 @@ class AnswerController extends ApiBaseController {
             $em->getConnection()->commit();
 
             $this->status = BaseConst::STATUS_SUCCESS;
-            $this->data = $wrapperService->getQuestionAnswerWrapper($answer);
+            $this->data = $wrapperService->getAnswerWrapper($answer);
             $this->msg = '添加回答成功';
         } catch (\Exception $e) {
             $em->getConnection()->rollback();
@@ -139,12 +139,70 @@ class AnswerController extends ApiBaseController {
             }
 
             $this->status = BaseConst::STATUS_SUCCESS;
-            $this->data = $wrapperService->getQuestionAnswerWrapper($answer);
+            $this->data = $wrapperService->getAnswerWrapper($answer);
             $this->msg = "获取问题回答详情成功";
         } catch (\Exception $e) {
             $this->printExceptionToLog($e);
         }
 
+        return $this->getJsonResponse();
+    }
+
+    /**
+     * @ApiDoc(
+     *  resource = true,
+     *  section = "Question",
+     *  description = "问题回答列表",
+     *  tags = {
+     *      "stable" = "#23fd09",
+     *      "cyy" = "#607d8b"
+     *  },
+     *  parameters = {
+     *      {
+     *          "name" = "Quid",
+     *          "dataType" = "string",
+     *          "required" = true,
+     *          "format" = "32位",
+     *          "description" = "问题唯一标识",
+     *      },
+     *      {
+     *          "name" = "OrderStr",
+     *          "dataType" = "string",
+     *          "required" = false,
+     *          "format" = "空或者后台传的字符串",
+     *          "description" = "为空是刷新，不为空则为加载更多"
+     *      },
+     *  },
+     *  output = {
+     *      "class" = "QuestionBundle\Entity\Wrapper\AnswerListWrapper",
+     *  },
+     *  views = {"version1", "default"},
+     * )
+     *
+     * @Route("api/v1/question/answer/list/", methods="POST")
+     */
+    public function listAction() {
+        $quid = $this->getPost('Quid');
+        $orderStr = $this->getPost('OrderStr');
+
+        $answerService = $this->get('question.answerservice');
+        $questionService = $this->get('question.questionservice');
+        $wrapperService = $this->get('question.wrapperservice');
+
+        try {
+            $question = $questionService->getQuestionByQuid($quid);
+            if (!UtilService::isValidObj($question)) {
+                $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, '问题不存在');
+            }
+
+            $answerList = $answerService->getNewAnswerList($question->getId(), $orderStr);
+
+            $this->status = BaseConst::STATUS_SUCCESS;
+            $this->data = $wrapperService->getAnswerListWrapper($answerList, $orderStr);
+            $this->msg = "获取问题回答列表成功";
+        } catch (\Exception $e) {
+            $this->printExceptionToLog($e);
+        }
         return $this->getJsonResponse();
     }
 }
