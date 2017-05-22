@@ -46,7 +46,7 @@ QuestionBundle\Entity\Question:
             type: integer
         weight:
             type: integer
-        AnswerNum:
+        answerNum:
             type: integer
         isValid:
             type: smallint

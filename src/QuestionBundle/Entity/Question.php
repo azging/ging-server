@@ -635,7 +635,7 @@ class Question implements \JsonSerializable {
     /**
      * @var integer
      */
-    private $AnswerNum;
+    private $answerNum;
 
 
     /**
@@ -647,7 +647,7 @@ class Question implements \JsonSerializable {
      */
     public function setAnswerNum($answerNum)
     {
-        $this->AnswerNum = $answerNum;
+        $this->answerNum = $answerNum;
 
         return $this;
     }
@@ -659,6 +659,6 @@ class Question implements \JsonSerializable {
      */
     public function getAnswerNum()
     {
-        return $this->AnswerNum;
+        return $this->answerNum;
     }
 }
