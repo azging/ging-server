@@ -83,4 +83,54 @@ class AppController extends ApiBaseController
 
         return $this->getJsonResponse();
     }
+
+    /**
+     * @ApiDoc(
+     *  resource = true,
+     *  section = "App",
+     *  description = "提交意见反馈",
+     *  tags = {
+     *      "stable" = "#23fd09",
+     *      "cyy" = "#607d8b"
+     *  },
+     *  parameters = {
+     *      {
+     *          "name" = "content",
+     *          "dataType" = "string",
+     *          "required" = true,
+     *          "format" = "500字以内",
+     *          "description" = "意见反馈内容"
+     *      }
+     *  },
+     *  output = {
+     *      "class" = "BaseBundle\Entity\Wrapper\BoolWrapper",
+     *  },
+     *  views = {"version1", "default"},
+     * )
+     *
+     * @Route("/api/v1/app/feedback/add/", methods="POST")
+     */
+    public function addFeedbackAction() {
+        $content = $this->getPost('Content');
+
+        $appService = $this->get('app.appservice');
+        $wrapperService = $this->get('base.wrapperservice');
+
+        try {
+            $this->checkIfLogin(false);
+
+            if (empty($content)) {
+                $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, '请填写内容');
+            }
+            $appService->addFeedback($this->userId, $content);
+
+            $this->status = BaseConst::STATUS_SUCCESS;
+            $this->data = $wrapperService->getBoolWrapper(true);
+            $this->msg = '提交意见反馈成功';
+        } catch (\Exception $e) {
+            $this->printExceptionToLog($e);
+        }
+
+        return $this->getJsonResponse();
+    }
 }

@@ -2,10 +2,13 @@
 
 namespace AppBundle\Entity;
 
+use UtilBundle\Container\TimeUtilService;
+use UtilBundle\Container\UtilService;
+
 /**
- * Feedback
+ * AppFeedback
  */
-class Feedback
+class AppFeedback implements \JsonSerializable
 {
     /**
      * @var int
@@ -196,5 +199,23 @@ class Feedback
     {
         return $this->updateTime;
     }
-}
 
+    function __construct() {
+        $nowTime = TimeUtilService::getCurrentDateTime();
+        $this->setFuid('');
+        $this->setUserId(0);
+        $this->setContent('');
+        $this->setIsValid(0);
+        $this->setCreateTime($nowTime);
+        $this->setUpdateTime($nowTime);
+    }
+
+    function jsonSerialize() {
+        return array(
+            'Fuid' => $this->fuid,
+            'UserId' => $this->userId,
+            'Content' => $this->content,
+            'CreateTime' => TimeUtilService::timeToStr($this->createTime),
+        );
+    }
+}

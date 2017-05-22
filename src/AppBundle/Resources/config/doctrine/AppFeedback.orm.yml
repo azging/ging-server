@@ -1,7 +1,7 @@
-AppBundle\Entity\Feedback:
+AppBundle\Entity\AppFeedback:
     type: entity
     table: null
-    repositoryClass: AppBundle\Repository\FeedbackRepository
+    repositoryClass: AppBundle\Repository\AppFeedbackRepository
     id:
         id:
             type: integer

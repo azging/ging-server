@@ -1,0 +1,4 @@
+services:
+    app.appservice:
+        class: AppBundle\Container\AppService
+        arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
