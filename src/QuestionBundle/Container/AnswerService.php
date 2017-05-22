@@ -68,6 +68,21 @@ class AnswerService extends BaseService {
      *
      * 2017-05-22
      *
+     * 采纳回答
+     */
+    public function adoptAnswer($answer) {
+        $infoArr = array(
+            'Status' => AnswerConst::ANSWER_STATUS_ADOPTED,
+            'PayStatus' => AnswerConst::ANSWER_PAY_STATUS_PAYING,
+        );
+        return $this->questionAnswerRepo->updateAnswer($answer, $infoArr);
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-22
+     *
      * 最新回答列表
      */
     public function getNewAnswerList($questionId, &$orderStr) {

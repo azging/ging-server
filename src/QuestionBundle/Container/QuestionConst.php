@@ -24,5 +24,6 @@ class QuestionConst {
     const QUESTION_PAY_STATUS_UNPAID = 0;
     const QUESTION_PAY_STATUS_PAYING = 1;
     const QUESTION_PAY_STATUS_PAID = 2;
-    const QUESTION_PAY_STATUS_DEAL = 3;
+    const QUESTION_PAY_STATUS_PAY_TO_ANSWER = 3;
+    const QUESTION_PAY_STATUS_DEAL = 4;
 }

@@ -12,6 +12,9 @@ use UtilBundle\Container\StringUtilService;
 use UtilBundle\Container\UtilService;
 
 use BaseBundle\Container\BaseConst;
+use QuestionBundle\Container\QuestionConst;
+
+use BaseBundle\Entity\Wrapper\BoolWrapper;
 
 class AnswerController extends ApiBaseController {
     public function __construct() {
@@ -203,6 +206,84 @@ class AnswerController extends ApiBaseController {
         } catch (\Exception $e) {
             $this->printExceptionToLog($e);
         }
+        return $this->getJsonResponse();
+    }
+
+    /**
+     * @ApiDoc(
+     *  resource = true,
+     *  section = "Question",
+     *  description = "挑选最佳回答",
+     *  tags = {
+     *      "stable" = "#23fd09",
+     *      "cyy" = "#607d8b"
+     *  },
+     *  parameters = {
+     *      {
+     *          "name" = "Quid",
+     *          "dataType" = "string",
+     *          "required" = true,
+     *          "format" = "32位",
+     *          "description" = "问题唯一标识",
+     *      },
+     *      {
+     *          "name" = "Auid",
+     *          "dataType" = "string",
+     *          "required" = true,
+     *          "format" = "32位",
+     *          "description" = "回答唯一标识",
+     *      },
+     *  },
+     *  output = {
+     *      "class" = "BaseBundle\Entity\Wrapper\BoolWrapper",
+     *  },
+     *  views = {"version1", "default"},
+     * )
+     *
+     * @Route("/api/v1/question/answer/adopt/", methods="POST")
+     */
+    public function adoptAction() {
+        $quid = $this->getPost('Quid');
+        $auid = $this->getPost('Auid');
+
+        $questionService = $this->get('question.questionservice');
+        $answerService = $this->get('question.answerservice');
+        $wrapperService = $this->get('base.wrapperservice');
+
+        $em = $this->getDoctrine()->getManager();
+        try {
+            $em->getConnection()->beginTransaction();
+            $this->checkIfLogin(true);
+
+            // TODO: 检查问题是否已经到期
+            $question = $questionService->getQuestionByQuid($quid);
+            if (!UtilService::isValidObj($question)) {
+                $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, '问题不存在');
+            }
+            if ($this->userId != $question->getUserId()) {
+                $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, '不是自己提问的问题');
+            }
+            $answer = $answerService->getAnswerByAuid($auid);
+            if (!UtilService::isValidObj($answer)) {
+                $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, "回答不存在");
+            }
+
+            $answer = $answerService->adoptAnswer($answer);
+            $question = $questionService->updateQuestionStatus($question,
+                    QuestionConst::QUESTION_STATUS_ADOPTED,
+                    QuestionConst::QUESTION_PAY_STATUS_PAY_TO_ANSWER);
+
+            $em->getConnection()->commit();
+
+            $this->status = BaseConst::STATUS_SUCCESS;
+            $this->data = $wrapperService->getBoolWrapper(true);
+            $this->msg = '选择最佳回答成功';
+        } catch (\Exception $e) {
+            $em->getConnection()->rollback();
+            $em->close();
+            $this->printExceptionToLog($e);
+        }
+
         return $this->getJsonResponse();
     }
 }

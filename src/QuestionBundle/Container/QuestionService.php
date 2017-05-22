@@ -73,6 +73,23 @@ class QuestionService extends BaseService {
     /**
      * cyy, since 1.0
      *
+     * 2017-05-22
+     *
+     * 更新问题状态
+     */
+    public function updateQuestionStatus($question, $status, $payStatus = -1) {
+        $infoArr = array(
+            'Status' => $status,
+        );
+        if (-1 != $payStatus) {
+            $infoArr['PayStatus'] = $payStatus;
+        }
+        return $this->questionRepo->updateQuestion($question, $infoArr);
+    }
+
+    /**
+     * cyy, since 1.0
+     *
      * 2017-05-20
      *
      * 最新问题列表
