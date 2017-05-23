@@ -1,0 +1,39 @@
+WalletBundle\Entity\WalletOrder:
+    type: entity
+    table: null
+    repositoryClass: WalletBundle\Repository\WalletOrderRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        userId:
+            type: integer
+        targetUserId:
+            type: integer
+        questionId:
+            type: integer
+        tradeType:
+            type: smallint
+        amountPayment:
+            type: float
+        onlinePayment:
+            type: float
+        balancePayment:
+            type: float
+        paymentType:
+            type: smallint
+        tradeNo:
+            type: string
+            length: '50'
+        tradeTime:
+            type: datetime
+        isValid:
+            type: smallint
+        createTime:
+            type: datetime
+        updateTime:
+            type: datetime
+    lifecycleCallbacks: {  }

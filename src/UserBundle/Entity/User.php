@@ -658,6 +658,7 @@ class User implements \JsonSerializable {
         $this->setAppVersion('');
         $this->setLat(0);
         $this->setLng(0);
+        $this->setWalletBalance(0);
         $this->setIsValid(0);
         $this->setCreateTime($nowTime);
         $this->setUpdateTime($nowTime);
@@ -713,5 +714,34 @@ class User implements \JsonSerializable {
     public function getLoginType()
     {
         return $this->loginType;
+    }
+    /**
+     * @var float
+     */
+    private $walletBalance;
+
+
+    /**
+     * Set walletBalance
+     *
+     * @param float $walletBalance
+     *
+     * @return User
+     */
+    public function setWalletBalance($walletBalance)
+    {
+        $this->walletBalance = $walletBalance;
+
+        return $this;
+    }
+
+    /**
+     * Get walletBalance
+     *
+     * @return float
+     */
+    public function getWalletBalance()
+    {
+        return $this->walletBalance;
     }
 }

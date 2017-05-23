@@ -1,0 +1,10 @@
+services:
+#    wallet.walletservice:
+#        class: WalletBundle\Container\WalletService
+#        arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
+    wallet.wrapperservice:
+        class: WalletBundle\Container\WrapperService
+        arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
+#    wallet.example:
+#        class: WalletBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]

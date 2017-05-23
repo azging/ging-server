@@ -60,6 +60,8 @@ UserBundle\Entity\User:
             type: float
         loginType:
             type: smallint
+        walletBalance:
+            type: float
         isValid:
             type: smallint
         createTime:

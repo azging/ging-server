@@ -1,3 +1,8 @@
+wallet:
+    resource: "@WalletBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
 place:
     resource: "@PlaceBundle/Controller/"
     type:     annotation
