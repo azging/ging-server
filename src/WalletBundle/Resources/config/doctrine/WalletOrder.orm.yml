@@ -9,19 +9,20 @@ WalletBundle\Entity\WalletOrder:
             generator:
                 strategy: AUTO
     fields:
+        ouid:
+            type: string
+            length: '50'
         userId:
             type: integer
         targetUserId:
             type: integer
         questionId:
             type: integer
+        answerId:
+            type: integer
         tradeType:
             type: smallint
-        amountPayment:
-            type: float
-        onlinePayment:
-            type: float
-        balancePayment:
+        amount:
             type: float
         paymentType:
             type: smallint
@@ -30,6 +31,7 @@ WalletBundle\Entity\WalletOrder:
             length: '50'
         tradeTime:
             type: datetime
+            nullable: true
         isValid:
             type: smallint
         createTime:

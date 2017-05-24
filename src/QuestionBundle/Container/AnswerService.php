@@ -70,10 +70,9 @@ class AnswerService extends BaseService {
      *
      * 采纳回答
      */
-    public function adoptAnswer($answer) {
+    public function updateStatus($answer, $status) {
         $infoArr = array(
-            'Status' => AnswerConst::ANSWER_STATUS_ADOPTED,
-            'PayStatus' => AnswerConst::ANSWER_PAY_STATUS_PAYING,
+            'Status' => $status,
         );
         return $this->questionAnswerRepo->updateAnswer($answer, $infoArr);
     }

@@ -2,6 +2,13 @@
 
 namespace WalletBundle\Repository;
 
+use UtilBundle\Container\StringUtilService;
+use UtilBundle\Container\TimeUtilService;
+
+use BaseBundle\Container\BaseConst;
+
+use WalletBundle\Entity\WalletOrder;
+
 /**
  * WalletOrderRepository
  *
@@ -10,4 +17,67 @@ namespace WalletBundle\Repository;
  */
 class WalletOrderRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * cyy, since .0
+     *
+     * 2017-05-23
+     *
+     * 将订单信息插入数据库中
+     */
+    public function insertOrder($infoArr = array()) {
+        $order = new WalletOrder();
+        
+        $ouid = StringUtilService::getGuid();
+        $order->setOuid($ouid);
+        $nowTime = TimeUtilService::getCurrentDateTime();
+        $order->setIsValid(BaseConst::IS_VALID_TRUE);
+
+        $order = $this->updateOrder($order, $infoArr);
+
+        return $order;
+    }
+    
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-23
+     *
+     * 更新订单信息
+     */
+    public function updateOrder($order, $infoArr = array()) {
+        if (is_array($infoArr)) {
+            while (list($key, $value) = each($infoArr)) {
+                $func = 'set' . $key;
+                $order->$func($value);
+            }
+        }
+        $nowTime = TimeUtilService::getCurrentDateTime();
+        $order->setUpdateTime($nowTime);
+
+        $this->_em->persist($order);
+        $this->_em->flush($order);
+
+        return $order;
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-23
+     *
+     * 根据某个字段查找Order
+     */
+    public function selectOneOrderByProp($prop, $value, $isValid = true) {
+        $order = null;
+        if (empty($prop)) {
+            return null;
+        }
+        if ($isValid) {
+            $order = $this->_em->getRepository('WalletBundle:WalletOrder')->findOneBy(array($prop => $value, 'isValid' => BaseConst::IS_VALID_TRUE));
+        } else {
+            $func = 'findOneBy' . ucfirst($prop);
+            $order = $this->_em->getRepository('WalletBundle:WalletOrder')->$func($value);
+        }
+        return $order;
+    }
 }

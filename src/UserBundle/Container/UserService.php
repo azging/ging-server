@@ -238,6 +238,51 @@ class UserService extends BaseService {
     /**
      * cyy, since 1.0
      *
+     * 2017-05-24
+     *
+     * 扣减用户的余额
+     */
+    public function deductBalance($user, $diffBalance) {
+        $infoArr = array(
+            'WalletBalance' => $user->getWalletBalance() - $diffBalance,
+        );
+
+        return $this->userRepo->updateUser($user, $infoArr);
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-24
+     *
+     * 增加用户的余额
+     */
+    public function increaseBalance($user, $diffBalance) {
+        $infoArr = array(
+            'WalletBalance' => $user->getWalletBalance() + $diffBalance,
+        );
+
+        return $this->userRepo->updateUser($user, $infoArr);
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-24
+     *
+     * 更新用户的余额
+     */
+    public function updateBalance($user, $balance) {
+        $infoArr = array(
+            'WalletBalance' => $balance,
+        );
+
+        return $this->userRepo->updateUser($user, $infoArr);
+    }
+
+    /**
+     * cyy, since 1.0
+     *
      * 2017-05-18
      *
      * 删除用户

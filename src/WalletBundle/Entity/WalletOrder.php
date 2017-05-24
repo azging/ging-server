@@ -2,10 +2,13 @@
 
 namespace WalletBundle\Entity;
 
+use UtilBundle\Container\TimeUtilService;
+use UtilBundle\Container\UtilService;
+
 /**
  * WalletOrder
  */
-class WalletOrder
+class WalletOrder implements \JsonSerializable
 {
     /**
      * @var int
@@ -31,21 +34,6 @@ class WalletOrder
      * @var int
      */
     private $tradeType;
-
-    /**
-     * @var float
-     */
-    private $amountPayment;
-
-    /**
-     * @var float
-     */
-    private $onlinePayment;
-
-    /**
-     * @var float
-     */
-    private $balancePayment;
 
     /**
      * @var int
@@ -182,78 +170,6 @@ class WalletOrder
     public function getTradeType()
     {
         return $this->tradeType;
-    }
-
-    /**
-     * Set amountPayment
-     *
-     * @param float $amountPayment
-     *
-     * @return WalletOrder
-     */
-    public function setAmountPayment($amountPayment)
-    {
-        $this->amountPayment = $amountPayment;
-
-        return $this;
-    }
-
-    /**
-     * Get amountPayment
-     *
-     * @return float
-     */
-    public function getAmountPayment()
-    {
-        return $this->amountPayment;
-    }
-
-    /**
-     * Set onlinePayment
-     *
-     * @param float $onlinePayment
-     *
-     * @return WalletOrder
-     */
-    public function setOnlinePayment($onlinePayment)
-    {
-        $this->onlinePayment = $onlinePayment;
-
-        return $this;
-    }
-
-    /**
-     * Get onlinePayment
-     *
-     * @return float
-     */
-    public function getOnlinePayment()
-    {
-        return $this->onlinePayment;
-    }
-
-    /**
-     * Set balancePayment
-     *
-     * @param float $balancePayment
-     *
-     * @return WalletOrder
-     */
-    public function setBalancePayment($balancePayment)
-    {
-        $this->balancePayment = $balancePayment;
-
-        return $this;
-    }
-
-    /**
-     * Get balancePayment
-     *
-     * @return float
-     */
-    public function getBalancePayment()
-    {
-        return $this->balancePayment;
     }
 
     /**
@@ -399,5 +315,130 @@ class WalletOrder
     {
         return $this->updateTime;
     }
-}
+    /**
+     * @var string
+     */
+    private $ouid;
 
+
+    /**
+     * Set ouid
+     *
+     * @param string $ouid
+     *
+     * @return WalletOrder
+     */
+    public function setOuid($ouid)
+    {
+        $this->ouid = $ouid;
+
+        return $this;
+    }
+
+    /**
+     * Get ouid
+     *
+     * @return string
+     */
+    public function getOuid()
+    {
+        return $this->ouid;
+    }
+    /**
+     * @var float
+     */
+    private $amount;
+
+
+    /**
+     * Set amount
+     *
+     * @param float $amount
+     *
+     * @return WalletOrder
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+
+        return $this;
+    }
+
+    /**
+     * Get amount
+     *
+     * @return float
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * Get amount cent
+     *
+     * @return integer
+     */
+    public function getAmountCent() {
+        return round(100 * $this->amount);
+    }
+
+    /**
+     * @var integer
+     */
+    private $answerId;
+
+
+    /**
+     * Set answerId
+     *
+     * @param integer $answerId
+     *
+     * @return WalletOrder
+     */
+    public function setAnswerId($answerId)
+    {
+        $this->answerId = $answerId;
+
+        return $this;
+    }
+
+    /**
+     * Get answerId
+     *
+     * @return integer
+     */
+    public function getAnswerId()
+    {
+        return $this->answerId;
+    }
+
+    function __construct() {
+        $nowTime = TimeUtilService::getCurrentDateTime();
+        $this->setOuid('');
+        $this->setUserId(0);
+        $this->setTargetUserId(0);
+        $this->setQuestionId(0);
+        $this->setAnswerId(0);
+        $this->setTradeType(0);
+        $this->setAmount(0.0);
+        $this->setPaymentType(0);
+        $this->setTradeNo('');
+        $this->setTradeTime(null);
+        $this->setIsValid(0);
+        $this->setCreateTime($nowTime);
+        $this->setUpdateTime($nowTime);
+    }
+
+    function jsonSerialize() {
+        $arr = array(
+            'Ouid' => $this->ouid,
+            'Amount' => $this->amount,
+            'TradeType' => $this->tradeType,
+            'PaymentType' => $this->paymentType,
+            'CreateTime' => TimeUtilService::timeToStr($this->createTime),
+            'UpdateTime' => TimeUtilService::timeToStr($this->updateTime),
+        );
+        return UtilService::getNotNullValueArray($arr);
+    }
+}

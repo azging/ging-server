@@ -2,8 +2,17 @@ services:
 #    wallet.walletservice:
 #        class: WalletBundle\Container\WalletService
 #        arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
+    wallet.orderservice:
+        class: WalletBundle\Container\OrderService
+        arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
     wallet.wrapperservice:
         class: WalletBundle\Container\WrapperService
+        arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
+    pay.wxservice:
+        class: WalletBundle\Container\WxPayService
+        arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
+    pay.balanceservice:
+        class: WalletBundle\Container\BalancePayService
         arguments: ["@doctrine.orm.entity_manager", "@app.logger", "@service_container", "@request_stack"]
 #    wallet.example:
 #        class: WalletBundle\Example

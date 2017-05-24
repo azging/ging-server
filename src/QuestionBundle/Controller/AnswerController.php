@@ -268,10 +268,8 @@ class AnswerController extends ApiBaseController {
                 $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, "回答不存在");
             }
 
-            $answer = $answerService->adoptAnswer($answer);
-            $question = $questionService->updateQuestionStatus($question,
-                    QuestionConst::QUESTION_STATUS_ADOPTED,
-                    QuestionConst::QUESTION_PAY_STATUS_PAY_TO_ANSWER);
+            $answer = $answerService->updateStatus($answer, AnswerConst::ANSWER_STATUS_ADOPTED);
+            $question = $questionService->updateStatus($question, QuestionConst::QUESTION_STATUS_ADOPTED);
 
             $em->getConnection()->commit();
 

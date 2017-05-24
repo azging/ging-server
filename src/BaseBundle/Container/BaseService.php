@@ -153,6 +153,17 @@ class BaseService {
      *
      * 2017-05-17
      *
+     * 获取AnswerService
+     */
+    protected function getAnswerService() {
+        return $this->container->get('question.answerservice');
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-17
+     *
      * 获取QuestionCommentService
      */
     protected function getQuestionCommentService() {
@@ -189,7 +200,7 @@ class BaseService {
      * 获取OrderService
      */
     protected function getOrderService() {
-        return $this->container->get('sales.orderservice');
+        return $this->container->get('wallet.orderservice');
     }
 
 }

@@ -77,13 +77,10 @@ class QuestionService extends BaseService {
      *
      * 更新问题状态
      */
-    public function updateQuestionStatus($question, $status, $payStatus = -1) {
+    public function updateStatus($question, $status) {
         $infoArr = array(
             'Status' => $status,
         );
-        if (-1 != $payStatus) {
-            $infoArr['PayStatus'] = $payStatus;
-        }
         return $this->questionRepo->updateQuestion($question, $infoArr);
     }
 
