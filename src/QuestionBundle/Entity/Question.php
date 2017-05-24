@@ -539,6 +539,7 @@ class Question implements \JsonSerializable {
             'PayStatus' => intval($this->payStatus),
             'AnswerNum' => intval($this->answerNum),
             'ExpireTime' => TimeUtilService::timeToStr($this->expireTime),
+            'ExpireTimeStr' => TimeUtilService::nowTimeDiff($this->expireTime),
             'CreateTime' => TimeUtilService::timeToStr($this->createTime),
             'UpdateTime' => TimeUtilService::timeToStr($this->updateTime),
         );

@@ -25,6 +25,36 @@ class TimeUtilService {
     /**
      * cyy, since 1.0
      *
+     * 2017-05-24
+     *
+     * 计算两个时间的间隔, $time1-$time2
+     */
+    static public function timeDiff($time1, $time2) {
+        $interval = $time1->diff($time2);
+        $diff = $interval->format('%r%h小时');
+        if ('0小时' == $diff) {
+            $diff = $interval->format('%r%i分钟');
+        } elseif ('-' == substr($diff, 0, 1)) {
+            $diff = '已过期';
+        }
+        return $diff;
+    }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-24
+     *
+     * 计算当前时间与给定时间的间隔
+     */
+    static public function nowTimeDiff($time) {
+        $nowTime = self::getCurrentDateTime();
+        return self::timeDiff($nowTime, $time);
+    }   
+
+    /**
+     * cyy, since 1.0
+     *
      * 2017-05-17
      *
      * 获取当前日期（年-月-日）
