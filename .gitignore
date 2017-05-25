@@ -15,3 +15,4 @@
 /vendor/
 /web/bundles/
 /src/BaseBundle/Container/ServerConst.php
+/web/.htaccess
