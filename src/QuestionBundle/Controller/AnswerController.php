@@ -9,10 +9,13 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use BaseBundle\Controller\ApiBaseController;
 
 use UtilBundle\Container\StringUtilService;
+use UtilBundle\Container\TimeUtilService;
 use UtilBundle\Container\UtilService;
 
 use BaseBundle\Container\BaseConst;
+use QuestionBundle\Container\AnswerConst;
 use QuestionBundle\Container\QuestionConst;
+use WalletBundle\Container\OrderConst;
 
 use BaseBundle\Entity\Wrapper\BoolWrapper;
 
@@ -246,16 +249,17 @@ class AnswerController extends ApiBaseController {
         $quid = $this->getPost('Quid');
         $auid = $this->getPost('Auid');
 
+        $userService = $this->get('user.userservice');
         $questionService = $this->get('question.questionservice');
         $answerService = $this->get('question.answerservice');
         $wrapperService = $this->get('base.wrapperservice');
+        $orderService = $this->get('wallet.orderservice');
 
         $em = $this->getDoctrine()->getManager();
         try {
             $em->getConnection()->beginTransaction();
             $this->checkIfLogin(true);
 
-            // TODO: 检查问题是否已经到期
             $question = $questionService->getQuestionByQuid($quid);
             if (!UtilService::isValidObj($question)) {
                 $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, '问题不存在');
@@ -263,13 +267,37 @@ class AnswerController extends ApiBaseController {
             if ($this->userId != $question->getUserId()) {
                 $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, '不是自己提问的问题');
             }
+            if (TimeUtilService::isBiggerTime(TimeUtilService::getCurrentDateTime(), $question->getExpireTime())) {
+                $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, '问题已过期，不能采纳回答');
+            }
+            if (QuestionConst::QUESTION_STATUS_ADOPTED == $question->getStatus() or QuestionConst::QUESTION_STATUS_ADOPTED_PAID_BEST == $question->getStatus()) {
+                $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, '已经采纳过回答');
+            }
             $answer = $answerService->getAnswerByAuid($auid);
             if (!UtilService::isValidObj($answer)) {
                 $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, "回答不存在");
             }
+            if ($question->getId() != $answer->getQuestionId()) {
+                $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, '回答与问题不符');
+            }
+            if ($this->userId == $answer->getUserId()) {
+                $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, '不能选择自己的回答');
+            }
+            if (AnswerConst::ANSWER_STATUS_ADOPTED == $answer->getStatus() or AnswerConst::ANSWER_STATUS_ADOPTED_PAID == $answer->getStatus()) {
+                $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, '已经采纳过回答');
+            }
 
             $answer = $answerService->updateStatus($answer, AnswerConst::ANSWER_STATUS_ADOPTED);
             $question = $questionService->updateStatus($question, QuestionConst::QUESTION_STATUS_ADOPTED);
+
+            $order = $orderService->addOrder($this->userId, $answer->getUserId(), $question->getId(), $answer->getId(), OrderConst::ORDER_TRADE_TYPE_ADOPT_ANSWER, $question->getReward(), OrderConst::ORDER_PAYMENT_TYPE_UNPAY);
+            $targetUser = $userService->getUserById($answer->getUserId());
+            if (!UtilService::isValidObj($targetUser)) {
+                $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, "回答者不存在");
+            }
+            $userService->increaseBalance($targetUser, $question->getReward());
+            $answer = $answerService->updateStatus($answer, AnswerConst::ANSWER_STATUS_ADOPTED_PAID);
+            $question = $questionService->updateStatus($question, QuestionConst::QUESTION_STATUS_ADOPTED_PAID_BEST);
 
             $em->getConnection()->commit();
 
