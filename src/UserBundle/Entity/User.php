@@ -641,8 +641,8 @@ class User implements \JsonSerializable {
         $nowTime = TimeUtilService::getCurrentDateTime();
         $this->setUuid('');
         $this->setCid('');
-        $this->setTelephone('');
-        $this->setWechatId('');
+        $this->setTelephone(null);
+        $this->setWechatId(null);
         $this->setNick('');
         $this->setAvatarUrl('http://download.duckr.cn/DuckrDefaultPhoto.png');
         $this->setGender(0);

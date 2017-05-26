@@ -174,7 +174,7 @@ class UserService extends BaseService {
                 $user = $this->registerByWechat($socialId, $nick, $avatarUrl, $gender);
                 break;
         }
-        return $this->userRepo->insertUser($infoArr);
+        return $user;
     }
 
     /**
