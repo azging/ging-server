@@ -97,6 +97,7 @@ class AnswerService extends BaseService {
             ->andWhere('qa.questionId = :QuestionId')
             ->setParameter('CreateTime', $orderStr)
             ->setParameter('QuestionId', $questionId)
+            ->addOrderBy('qa.status', 'DESC')
             ->addOrderBy('qa.createTime', 'DESC')
             ->setMaxResults(BaseConst::LIST_DEFAULT_NUM)
             ->getQuery();
@@ -134,8 +135,9 @@ class AnswerService extends BaseService {
             case AnswerConst::ANSWER_STATUS_TYPE_ALL:
                 break;
             case AnswerConst::ANSWER_STATUS_TYPE_ADOPTED:
-                $q = $q->andWhere('qa.status = :StatusAdopted')
-                    ->setParameter('StatusAdopted', AnswerConst::ANSWER_STATUS_ADOPTED);
+                $q = $q->andWhere('qa.status = :StatusAdopted or qa.status = :StatusPaid')
+                    ->setParameter('StatusAdopted', AnswerConst::ANSWER_STATUS_ADOPTED)
+                    ->setParameter('StatusPaid', AnswerConst::ANSWER_STATUS_ADOPTED_PAID);
                 break;
         }
 
