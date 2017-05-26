@@ -45,7 +45,7 @@ class QuestionController extends ApiBaseController {
      *          "description" = "问题描述"
      *      },
      *      {
-     *          "name" = "QuestionUrls",
+     *          "name" = "PhotoUrls",
      *          "dataType" = "string",
      *          "required" = true,
      *          "format" = "最多9张",
@@ -77,7 +77,7 @@ class QuestionController extends ApiBaseController {
     public function publishAction() {
         $title = $this->getPost('Title');
         $description = $this->getPost('Description');
-        $questionUrls = $this->getPost('QuestionUrls');
+        $photoUrls = $this->getPost('PhotoUrls');
         $reward = floatval($this->getPost('Reward'));
         $isAnonymous = intval($this->getPost('IsAnonymous'));
 
@@ -100,7 +100,7 @@ class QuestionController extends ApiBaseController {
 
             $expireTime = TimeUtilService::getDateTimeAfterHours(QuestionConst::QUESTION_EXPIRE_HOURS);
 
-            $question = $questionService->publishQuestion($this->userId, $cityId, $lng, $lat, $title, $description, $questionUrls, $reward, $isAnonymous, $expireTime);
+            $question = $questionService->publishQuestion($this->userId, $cityId, $lng, $lat, $title, $description, $photoUrls, $reward, $isAnonymous, $expireTime);
 
             $this->status = BaseConst::STATUS_SUCCESS;
             $this->data = $wrapperService->getQuestionWrapper($question);

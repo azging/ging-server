@@ -54,12 +54,12 @@ class QuestionService extends BaseService {
      *
      * 发布问题
      */
-    public function publishQuestion($userId, $cityId, $lng, $lat, $title, $description, $questionUrls, $reward, $isAnonymous, $expireTime) {
+    public function publishQuestion($userId, $cityId, $lng, $lat, $title, $description, $photoUrls, $reward, $isAnonymous, $expireTime) {
         $infoArr = array(
             'UserId' => $userId,
             'Title' => $title,
             'Description' => $description,
-            'QuestionUrls' => $questionUrls,
+            'PhotoUrls' => $photoUrls,
             'Reward' => $reward,
             'IsAnonymous' => $isAnonymous,
             'CityId' => $cityId,
@@ -102,7 +102,7 @@ class QuestionService extends BaseService {
             ->from('QuestionBundle:Question', 'q')
             ->where('q.createTime < :CreateTime')
             ->andWhere('q.isValid = 1')
-            ->andWhere('q.expireTime < :ExpireTime')
+            ->andWhere('q.expireTime > :ExpireTime')
             ->andWhere('q.status = :Status')
             ->setParameter('CreateTime', $orderStr)
             ->setParameter('ExpireTime', $nowTime)
@@ -137,7 +137,7 @@ class QuestionService extends BaseService {
             ->from('QuestionBundle:Question', 'q')
             ->where('q.weight < :Weight')
             ->andWhere('q.isValid = 1')
-            ->andWhere('q.expireTime < :ExpireTime')
+            ->andWhere('q.expireTime > :ExpireTime')
             ->andWhere('q.status = :Status')
             ->setParameter('Weight', $orderStr)
             ->setParameter('ExpireTime', $nowTime)
@@ -187,7 +187,7 @@ class QuestionService extends BaseService {
             ->addSelect($getDistanceSql)
             ->from('QuestionBundle:Question', 'q')
             ->where('q.isValid = 1')
-            ->andWhere('q.expireTime < :ExpireTime')
+            ->andWhere('q.expireTime > :ExpireTime')
             ->andWhere('q.status = :Status')
             ->setParameter('ExpireTime', $nowTime)
             ->setParameter('Status', QuestionConst::QUESTION_STATUS_ANSWERING)
