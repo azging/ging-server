@@ -31,11 +31,15 @@ class TimeUtilService {
      */
     static public function timeDiff($time1, $time2) {
         $interval = $time1->diff($time2);
-        $diff = $interval->format('%r%h小时');
-        if ('0小时' == $diff) {
-            $diff = $interval->format('%r%i分钟');
-        } elseif ('-' == substr($diff, 0, 1)) {
+        $diff = $interval->format('%r%d天%h小时');
+        if ('-' == substr($diff, 0, 1)) {
             $diff = '已过期';
+        }
+        if ('0' == substr($diff, 0, 1)) {
+            $diff = $interval->format('%h小时');
+        }
+        if ('0' == substr($diff, 0, 1)) {
+            $diff = $interval->format('%i分钟');
         }
         return $diff;
     }
