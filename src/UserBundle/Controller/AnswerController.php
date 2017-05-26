@@ -66,7 +66,7 @@ class AnswerController extends ApiBaseController {
             $answerList = $answerService->getUserAnswerListByStatusType($this->userId, $statusType, $orderStr);
 
             $this->status = BaseConst::STATUS_SUCCESS;
-            $this->data = $wrapperService->getAnswerListWrapper($answerList, $orderStr);
+            $this->data = $wrapperService->getQuestionListWrapperByAnswerList($answerList, $orderStr);
             $this->msg = "获取我的回答列表成功";
         } catch (\Exception $e) {
             $this->printExceptionToLog($e);

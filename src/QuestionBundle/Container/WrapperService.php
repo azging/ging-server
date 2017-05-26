@@ -119,4 +119,28 @@ class WrapperService extends BaseService {
 
         return $wrapper;
     }
+
+    /**
+     * cyy, since 1.0
+     *
+     * 2017-05-19
+     *
+     * 根据answerList返回QuestionWrapper的List
+     */
+    public function getQuestionListWrapperByAnswerList($answerList, $orderStr, $showUser = true) {
+        $questionService = $this->getQuestionService();
+
+        $wrapper = new QuestionListWrapper();
+
+        $questionWrapperList = array();
+        foreach ($answerList as $answer) {
+            $question = $questionService->getQuestionById($answer->getQuestionId());
+            $questionWrapper = $this->getQuestionWrapper($question, $showUser);
+            $questionWrapperList[] = $questionWrapper;
+        }
+        $wrapper->setQuestionWrapperList($questionWrapperList);
+        $wrapper->setOrderStr($orderStr);
+
+        return $wrapper;
+    }
 }
