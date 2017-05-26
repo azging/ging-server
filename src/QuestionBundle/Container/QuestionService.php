@@ -95,13 +95,18 @@ class QuestionService extends BaseService {
         if (empty($orderStr)) {
             $orderStr = TimeUtilService::timeToStr(TimeUtilService::getDateTimeAfterMinutes("+5"));
         }
+        $nowTime = TimeUtilService::dateToStr(TimeUtilService::getCurrentDateTime());
 
         $qb = $this->em->createQueryBuilder();
         $q = $qb->select('q')
             ->from('QuestionBundle:Question', 'q')
             ->where('q.createTime < :CreateTime')
             ->andWhere('q.isValid = 1')
+            ->andWhere('q.expireTime < :ExpireTime')
+            ->andWhere('q.status = :Status')
             ->setParameter('CreateTime', $orderStr)
+            ->setParameter('ExpireTime', $nowTime)
+            ->setParameter('Status', QuestionConst::QUESTION_STATUS_ANSWERING)
             ->addOrderBy('q.createTime', 'DESC')
             ->setMaxResults(BaseConst::LIST_DEFAULT_NUM)
             ->getQuery();
@@ -125,13 +130,18 @@ class QuestionService extends BaseService {
         if (empty($orderStr)) {
             $orderStr = QuestionConst::QUESTION_MAX_WEIGHT;
         }
+        $nowTime = TimeUtilService::dateToStr(TimeUtilService::getCurrentDateTime());
 
         $qb = $this->em->createQueryBuilder();
         $q = $qb->select('q')
             ->from('QuestionBundle:Question', 'q')
             ->where('q.weight < :Weight')
             ->andWhere('q.isValid = 1')
+            ->andWhere('q.expireTime < :ExpireTime')
+            ->andWhere('q.status = :Status')
             ->setParameter('Weight', $orderStr)
+            ->setParameter('ExpireTime', $nowTime)
+            ->setParameter('Status', QuestionConst::QUESTION_STATUS_ANSWERING)
             ->addOrderBy('q.weight', 'DESC')
             ->setMaxResults(BaseConst::LIST_DEFAULT_NUM)
             ->getQuery();
@@ -155,6 +165,7 @@ class QuestionService extends BaseService {
         if (empty($orderStr)) {
             $orderStr = 0;
         }
+        $nowTime = TimeUtilService::dateToStr(TimeUtilService::getCurrentDateTime());
 
         $lng = $this->getLocLng();
         $lat = $this->getLocLat();
@@ -176,6 +187,10 @@ class QuestionService extends BaseService {
             ->addSelect($getDistanceSql)
             ->from('QuestionBundle:Question', 'q')
             ->where('q.isValid = 1')
+            ->andWhere('q.expireTime < :ExpireTime')
+            ->andWhere('q.status = :Status')
+            ->setParameter('ExpireTime', $nowTime)
+            ->setParameter('Status', QuestionConst::QUESTION_STATUS_ANSWERING)
             ->setParameter('Lat', $lat)
             ->setParameter('Lng', $lng)
             ->having('distance > :Distance')
@@ -220,14 +235,17 @@ class QuestionService extends BaseService {
             case QuestionConst::QUESTION_STATUS_TYPE_ALL:
                 break;
             case QuestionConst::QUESTION_STATUS_TYPE_UNSOLVED:
-                $q = $q->andWhere('q.status = :StatusAnswer or q.status = :StatusNoAnswer or q.status = :StatusUnAdopted')
+                $q = $q->andWhere('q.status = :StatusAnswer or q.status = :StatusNoAnswer or q.status = :StatusRefunded or q.status = :StatusUnAdopted or q.status = :StatusPaidFirst')
                     ->setParameter('StatusAnswer', QuestionConst::QUESTION_STATUS_ANSWERING)
                     ->setParameter('StatusNoAnswer', QuestionConst::QUESTION_STATUS_EXPIRED_NO_ANSWER)
-                    ->setParameter('StatusUnAdopted', QuestionConst::QUESTION_STATUS_EXPIRED_UNADOPTED);
+                    ->setParameter('StatusRefunded', QuestionConst::QUESTION_STATUS_EXPIRED_NO_ANSWER_REFUNDED)
+                    ->setParameter('StatusUnAdopted', QuestionConst::QUESTION_STATUS_EXPIRED_UNADOPTED)
+                    ->setParameter('StatusPaidFirst', QuestionConst::QUESTION_STATUS_EXPIRED_UNADOPTED_PAID_FIRST);
                 break;
             case QuestionConst::QUESTION_STATUS_TYPE_SOLVED:
-                $q = $q->andWhere('q.status = :StatusAdopted')
-                    ->setParameter('StatusAdopted', QuestionConst::QUESTION_STATUS_ADOPTED);
+                $q = $q->andWhere('q.status = :StatusAdopted or q.status = :StatusPaid')
+                    ->setParameter('StatusAdopted', QuestionConst::QUESTION_STATUS_ADOPTED)
+                    ->setParameter('StatusPaid', QuestionConst::QUESTION_STATUS_ADOPTED_PAID_BEST);
                 break;
         }
 
