@@ -400,6 +400,39 @@ class WxPayApi
 		return $result;
 	}
 	
+	/**
+	 * 
+	 * 提现到微信，WxPayOrderQuery中out_trade_no、transaction_id至少填一个
+	 * appid、mchid、spbill_create_ip、nonce_str不需要填入
+	 * @param WxPayOrderQuery $inputObj
+	 * @param int $timeOut
+	 * @throws WxPayException
+	 * @return 成功时返回，其他抛异常
+	 */
+	public static function withdraw($inputObj, $timeOut = 6)
+	{
+		$url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
+        //TODO 付款给微信个人用户
+        //文档链接：https://pay.weixin.qq.com/wiki/doc/api/tools/mch_pay.php?chapter=14_2
+		//检测必填参数
+/*		if(!$inputObj->IsOut_trade_noSet() && !$inputObj->IsTransaction_idSet()) {
+			throw new WxPayException("订单查询接口中，out_trade_no、transaction_id至少填一个！");
+		}
+		$inputObj->SetAppid(WxPayConfig::APPID);//公众账号ID
+		$inputObj->SetMch_id(WxPayConfig::MCHID);//商户号
+		$inputObj->SetNonce_str(self::getNonceStr());//随机字符串
+		
+		$inputObj->SetSign();//签名
+		$xml = $inputObj->ToXml();
+		
+		$startTimeStamp = self::getMillisecond();//请求开始时间
+		$response = self::postXmlCurl($xml, $url, false, $timeOut);
+		$result = WxPayResults::Init($response);*/
+		self::reportCostTime($url, $startTimeStamp, $result);//上报请求花费时间
+		
+		return $result;
+	}
+	
  	/**
  	 * 
  	 * 支付结果通用通知

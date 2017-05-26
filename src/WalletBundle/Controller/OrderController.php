@@ -147,13 +147,23 @@ class OrderController extends ApiBaseController
 
             $wxPrepay = null;
             $balancePay = null;
-            if (OrderConst::ORDER_PAYMENT_TYPE_BALANCE == $paymentType) {
-                if ($this->user->getWalletBalance() < $amount) {
-                    $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, '余额不足，请使用其他支付方式');
+            if (OrderConst::ORDER_TRADE_TYPE_WITHDRAW == $tradeType) {
+                //TODO 微信提现接口完成后不抛异常
+                $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, '暂不支持提现');
+                if (empty($this->user->getWechatId())) {
+                    $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, '请先绑定微信');
                 }
-                $balancePay = $balancePayService->callBalancePay($order, $this->user, $targetUser, $tradeType, $question, $answer);
-            } else if (OrderConst::ORDER_PAYMENT_TYPE_WECHAT == $paymentType) {
-                $wxPrepay = $wxPayService->callWxPay($order, $question);
+                $wxPrepay = $wxPayService->callWxWithdraw($order, $this->user);
+            }
+            if (OrderConst::ORDER_TRADE_TYPE_QUESTION == $tradeType) {
+                if (OrderConst::ORDER_PAYMENT_TYPE_BALANCE == $paymentType) {
+                    if ($this->user->getWalletBalance() < $amount) {
+                        $this->throwNewException(BaseConst::STATUS_ERROR_COMMON, '余额不足，请使用其他支付方式');
+                    }
+                    $balancePay = $balancePayService->callBalancePay($order, $this->user, $targetUser, $tradeType, $question, $answer);
+                } else if (OrderConst::ORDER_PAYMENT_TYPE_WECHAT == $paymentType) {
+                    $wxPrepay = $wxPayService->callWxPay($order, $question);
+                }
             }
 
             $this->status = BaseConst::STATUS_SUCCESS;

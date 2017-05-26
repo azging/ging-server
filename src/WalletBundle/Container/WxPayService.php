@@ -71,6 +71,19 @@ class WxPayService extends \WxPayNotify {
     /**
      * cyy, since 1.0
      *
+     * 2017-05-26
+     *
+     * 调用微信提现
+     */
+    public function callWxWithdraw($order, $user) {
+        //TODO 微信提现
+        $result = array();//\WxPayApi::withdraw($unifiedOrder);
+        return $result;
+    }
+    
+    /**
+     * cyy, since 1.0
+     *
      * 2017-05-23
      *
      * 重写微信支付成功回调函数
