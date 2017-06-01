@@ -33,7 +33,7 @@ class WalletController extends ApiBaseController
      *
      * @Route("/api/v1/wallet/balance/", methods="GET")
      */
-    public function userInfoAction() {
+    public function balanceAction() {
         $uuid = $this->getCookieData('UUID');
 
         $userService = $this->get('user.userservice');
