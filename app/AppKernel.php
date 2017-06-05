@@ -22,6 +22,7 @@ class AppKernel extends Kernel
             new QuestionBundle\QuestionBundle(),
             new PlaceBundle\PlaceBundle(),
             new WalletBundle\WalletBundle(),
+            new WebBundle\WebBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
